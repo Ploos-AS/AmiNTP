@@ -20,6 +20,7 @@ int amintp_parse_cli(int argc, char **argv, struct amintp_options *options)
     options->retries = 2;
     options->query = 0;
     options->sync = 0;
+    options->nortc = 0;
     options->show_help = 0;
     options->show_version = 0;
 
@@ -34,6 +35,8 @@ int amintp_parse_cli(int argc, char **argv, struct amintp_options *options)
             options->query = 1;
         } else if (!strcmp(argv[i], "SYNC")) {
             options->sync = 1;
+        } else if (!strcmp(argv[i], "NORTC")) {
+            options->nortc = 1;
         } else if ((v = value_after(argv[i], "SERVER=")) != 0 && *v) {
             options->server = v;
         } else if ((v = value_after(argv[i], "PORT=")) != 0 && *v) {
@@ -56,6 +59,9 @@ int amintp_parse_cli(int argc, char **argv, struct amintp_options *options)
     if (options->query && options->sync) {
         return 20;
     }
+    if (options->nortc && !options->sync) {
+        return 20;
+    }
     return 0;
 }
 
@@ -63,7 +69,8 @@ void amintp_print_help(void)
 {
     puts("AmiNTP - minimal SNTP client for AmigaOS 2.04+");
     puts("Usage: AmiNTP SERVER=<host> QUERY [PORT=123] [TIMEOUT=5] [RETRIES=2]");
-    puts("       AmiNTP SERVER=<host> SYNC  [PORT=123] [TIMEOUT=5] [RETRIES=2]");
+    puts("       AmiNTP SERVER=<host> SYNC  [NORTC] [PORT=123] [TIMEOUT=5] [RETRIES=2]");
     puts("       AmiNTP HELP | VERSION");
-    puts("SYNC updates the Amiga system clock only; RTC support is added later.");
+    puts("SYNC updates the system clock and, by default, battclock.resource.");
+    puts("NORTC updates the system clock only.");
 }
