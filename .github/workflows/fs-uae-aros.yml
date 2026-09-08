@@ -1,0 +1,36 @@
+name: FS-UAE AROS qualification
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  aros-boot-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install FS-UAE and Xvfb
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fs-uae xvfb
+
+      - name: Validate M3.3a harness
+        run: make m3.3a-check
+
+      - name: Boot FS-UAE with internal AROS Kickstart
+        run: ci/fs-uae/run-aros-smoke.sh
+
+      - name: Upload FS-UAE qualification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fs-uae-aros-qualification
+          path: build/fs-uae/
+          if-no-files-found: warn

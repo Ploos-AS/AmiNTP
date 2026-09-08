@@ -1,0 +1,5 @@
+[fs-uae]
+amiga_model = A1200
+kickstart_file = internal
+kickstart_setup = 0
+fullscreen = 0
