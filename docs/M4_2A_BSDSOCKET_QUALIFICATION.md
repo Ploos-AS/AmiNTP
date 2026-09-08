@@ -109,3 +109,23 @@ both socket modes. The current AmiNTP VERSION run now reaches `BOOT_START` and
 `BEFORE`, but its output is `locale.library failed to load` and no RC/AFTER/DONE
 marker is produced. This is a deterministic post-invocation failure, independent
 of `bsdsocket_library` mode. Networking remains untested.
+
+## libc/locale probe results
+
+Independent fresh boots provide the following boundary:
+
+- Probe B (`puts("HELLO")`): PASS in socket modes 0 and 1 (`HELLO`, RC 0,
+  AFTER/DONE).
+- Probe C (DOS `Write`): PASS in socket mode 0 (`HELLO-DOS`, RC 0,
+  AFTER/DONE); socket mode 1 uses the same proven boot path and is not a
+  networking test.
+- Probe D (`OpenLibrary("locale.library")`): `LOCALE_OPEN_FAIL` in socket
+  mode 0; the AmiNTP command does not reach shell return. This is a direct
+  guest library-open failure, independent of bsdsocket.
+
+The current AmiNTP binary contains `_LocaleBase` and `___locale_ctype_`, while
+independent puts/DOS probes do not. The application also links formatted
+`printf`/`fprintf` paths, which pull the libnix locale support into the final
+image. This is consistent with the observed `locale.library failed to load`,
+but no application change is justified: the guest cannot open the library at
+all. M4.2a remains blocked on the disposable AmigaOS locale installation.
