@@ -101,6 +101,32 @@ watchdog; the same behavior occurred with and without `requiresinitdelay=yes`.
 Driver presence is proven, but device open/interface creation is not; no
 address, route, DNS, or UDP proof exists.
 
+### Direct SANA-II isolation
+
+The exact disposable interface file passed to AddNetInterface was:
+
+```text
+device=a2065.device
+unit=0
+configure=dhcp
+requiresinitdelay=no
+```
+
+This matches the installed AmiTCP_NG `Storage/NetInterfaces/A2065` example and
+its ReadMe. The harness assigned `DEVS:Networks` to the writable guest path
+containing `a2065.device`; the probe's `EXISTS`/copy path is therefore the exact
+path used by the device open.
+
+A native Bebbo SANA-II probe, compiled against the official `devices/sana2.h`,
+was run separately under a watchdog for `open`, `devicequery`, `station`,
+`config`, and `online`. Each run printed `BEFORE_OPEN` and then
+`OPENERR=4294967295` (`IOERR_OPENFAIL`, or `-1`). None reached an S2 command;
+S2_DEVICEQUERY, S2_GETSTATIONADDRESS, S2_CONFIGINTERFACE, and S2_ONLINE are
+therefore **UNREACHED**, rather than successful or hanging. This establishes
+the first failing operation as `OpenDevice`, below AmiTCP and before any SANA-II
+wire/configuration operation. AddNetInterface itself still hangs after this
+failure, until the host watchdog.
+
 ## Runtime observations
 
 Exact commands, guest times and RC files are in [evidence](evidence/m4.2/).

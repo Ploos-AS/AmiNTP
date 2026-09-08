@@ -14,12 +14,17 @@ p.add_argument('--net', type=Path, required=True)
 p.add_argument('--rom', type=Path, required=True)
 p.add_argument('--driver', type=Path, required=True,
                help='local extracted a2065.device; never copied into the repo')
+p.add_argument('--probe', type=Path,
+               help='optional native SANA-II probe executable')
+p.add_argument('--probe-command', default='open',
+               choices=('open', 'devicequery', 'station', 'config', 'online'))
 p.add_argument('--ipv4', required=True, help='Current public NTP server IPv4 address')
 p.add_argument('--out', type=Path, required=True)
 a = p.parse_args()
 import ipaddress
 ipaddress.IPv4Address(a.ipv4)
-for path in (a.workbench, a.net, a.rom, a.driver, Path('AmiNTP')):
+required = (a.workbench, a.net, a.rom, a.driver, Path('AmiNTP'))
+for path in required:
     if not path.exists():
         p.error(f'Missing {path}')
 a.out.mkdir(parents=True, exist_ok=False)
@@ -33,6 +38,10 @@ shutil.copyfile('docs/evidence/m3.4/ports.rexx', guest / 'ports.rexx')
 shutil.copyfile(a.workbench / 'Storage/NetInterfaces/A2065', guest / 'A2065')
 (guest / 'Networks').mkdir()
 shutil.copyfile(a.driver, guest / 'Networks/a2065.device')
+if a.probe:
+    if not a.probe.exists():
+        p.error(f'Missing {a.probe}')
+    shutil.copyfile(a.probe, guest / 'sana2-probe')
 (guest / 'driver-sha256.txt').write_text(
     hashlib.sha256(a.driver.read_bytes()).hexdigest() + '  a2065.device\n')
 (guest / 'env/AmiNTP/AmiNTP.conf').write_text(
@@ -83,6 +92,11 @@ C:Echo $RC >Q:net-start-rc.txt
 C:Version bsdsocket.library FULL >Q:socket-open.txt
 C:ShowNetStatus >Q:net-status.txt
 C:netstat >Q:interfaces-routes.txt
+C:If EXISTS Q:sana2-probe
+C:Run >Q:probe-run.txt Q:sana2-probe {a.probe_command} >Q:probe-{a.probe_command}.txt
+C:Echo $RC >Q:probe-{a.probe_command}-rc.txt
+C:Wait 1
+C:EndIf
 C:Assign DEVS:Networks Q:Networks
 C:AddNetInterface Q:A2065 >Q:network-add.txt
 C:Echo $RC >Q:network-add-rc.txt
@@ -126,6 +140,7 @@ SYS:Rexxc/RX Q:ports.rexx >Q:ports-after.txt
 C:Copy RAM:AmiTCP.log Q:stack-log.txt
 C:Echo DONE >Q:done.txt
 '''
+s = s.replace('{a.probe_command}', a.probe_command)
 (guest / 'S/Startup-Sequence').write_text(s)
 (guest / 'resident').write_text('Q:AmiNTP RESIDENT >Q:resident-output.txt\nC:Echo $RC >Q:resident-rc.txt\n')
 print(out / 'qualification.fs-uae')
