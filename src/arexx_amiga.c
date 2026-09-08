@@ -10,7 +10,7 @@
 #include "amintp/arexx.h"
 #include "amintp/platform.h"
 
-struct Library *RexxSysBase;
+struct RxsLib *RexxSysBase;
 
 static void reply_rexx(struct RexxMsg *msg, int rc, const char *result)
 {
@@ -29,14 +29,14 @@ int amintp_arexx_run(void)
     int running = 1;
 
     amintp_arexx_reset_state();
-    RexxSysBase = OpenLibrary(RXSNAME, 36);
+    RexxSysBase = (struct RxsLib *)OpenLibrary((CONST_STRPTR)RXSNAME, 36);
     if (RexxSysBase == 0) return 20;
-    if (FindPort((STRPTR)AMINTP_AREXX_PORT) != 0) {
-        CloseLibrary(RexxSysBase); RexxSysBase = 0; return 20;
+    if (FindPort((CONST_STRPTR)AMINTP_AREXX_PORT) != 0) {
+        CloseLibrary((struct Library *)RexxSysBase); RexxSysBase = 0; return 20;
     }
     port = CreateMsgPort();
-    if (port == 0) { CloseLibrary(RexxSysBase); RexxSysBase = 0; return 20; }
-    port->mp_Node.ln_Name = (STRPTR)AMINTP_AREXX_PORT;
+    if (port == 0) { CloseLibrary((struct Library *)RexxSysBase); RexxSysBase = 0; return 20; }
+    port->mp_Node.ln_Name = (char *)AMINTP_AREXX_PORT;
     AddPort(port);
     signals = 1UL << port->mp_SigBit;
 
@@ -61,7 +61,7 @@ int amintp_arexx_run(void)
 
     RemPort(port);
     DeleteMsgPort(port);
-    CloseLibrary(RexxSysBase);
+    CloseLibrary((struct Library *)RexxSysBase);
     RexxSysBase = 0;
     return 0;
 }

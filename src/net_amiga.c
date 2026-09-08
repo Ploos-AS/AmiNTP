@@ -23,12 +23,12 @@ int amintp_udp_query(const char *host, unsigned short port,
     unsigned attempt;
     LONG fd;
 
-    SocketBase = OpenLibrary("bsdsocket.library", 4);
+    SocketBase = OpenLibrary((CONST_STRPTR)"bsdsocket.library", 4);
     if (SocketBase == 0) {
         return 10;
     }
 
-    he = gethostbyname((char *)host);
+    he = gethostbyname((STRPTR)host);
     if (he == 0 || he->h_addr_list == 0 || he->h_addr_list[0] == 0) {
         CloseLibrary(SocketBase);
         SocketBase = 0;

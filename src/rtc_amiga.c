@@ -13,7 +13,7 @@ int amintp_set_rtc_time(const struct amintp_amiga_time *time)
         return 20;
     }
 
-    BattClockBase = OpenResource(BATTCLOCKNAME);
+    BattClockBase = OpenResource((CONST_STRPTR)BATTCLOCKNAME);
     if (BattClockBase == 0) {
         return 5;
     }

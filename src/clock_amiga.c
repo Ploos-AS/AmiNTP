@@ -28,7 +28,7 @@ int amintp_set_system_time(const struct amintp_amiga_time *time)
         return 20;
     }
 
-    open_rc = OpenDevice(TIMERNAME, UNIT_MICROHZ,
+    open_rc = OpenDevice((CONST_STRPTR)TIMERNAME, UNIT_MICROHZ,
                          (struct IORequest *)request, 0);
     if (open_rc != 0) {
         DeleteIORequest((struct IORequest *)request);
