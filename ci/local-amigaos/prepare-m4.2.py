@@ -27,6 +27,7 @@ guest = out / 'guest'
 shutil.copyfile('AmiNTP', guest / 'AmiNTP')
 shutil.copyfile('ci/local-amigaos/m4.2-arexx.rexx', guest / 'm4.2-arexx.rexx')
 shutil.copyfile('docs/evidence/m3.4/ports.rexx', guest / 'ports.rexx')
+shutil.copyfile(a.workbench / 'Storage/NetInterfaces/A2065', guest / 'A2065')
 (guest / 'env/AmiNTP/AmiNTP.conf').write_text(
     'SERVER=pool.ntp.org\nPORT=123\nTIMEOUT=5\nRETRIES=2\n')
 (out / 'qualification.fs-uae').write_text(f'''[fs-uae]
@@ -35,6 +36,7 @@ chip_memory = 2048
 fast_memory = 8192
 fpu = 0
 bsdsocket_library = 0
+network_card = a2065
 kickstart_file = {a.rom.resolve()}
 hard_drive_0 = {guest}
 hard_drive_0_label = Qualification
@@ -73,6 +75,10 @@ C:Echo $RC >Q:net-start-rc.txt
 C:Version bsdsocket.library FULL >Q:socket-open.txt
 C:ShowNetStatus >Q:net-status.txt
 C:netstat >Q:interfaces-routes.txt
+C:AddNetInterface Q:A2065 >Q:network-add.txt
+C:Echo $RC >Q:network-add-rc.txt
+C:ShowNetStatus >Q:network-status-after-add.txt
+C:netstat >Q:interfaces-routes-after-add.txt
 '''
 commands = [('version', 'VERSION'),
             ('dns', 'QUERY SERVER=pool.ntp.org TIMEOUT=5 RETRIES=2'),

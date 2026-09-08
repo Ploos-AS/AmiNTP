@@ -21,7 +21,7 @@ M31_TEST := build/host/test_arexx
 M32_TEST := build/host/test_arexx_m32
 M41_TEST := build/host/test_config
 
-.PHONY: all clean check host-check m1-check m1.3-check m2.1-check m2.2-check m2.3-check m3.1-check m3.2-check m3.3a-check m3.3b-check m3.3c-check m4.1-check native-check
+.PHONY: all clean check host-check m1-check m1.3-check m2.1-check m2.2-check m2.3-check m3.1-check m3.2-check m3.3a-check m3.3b-check m3.3c-check m4.1-check m4.2-check native-check
 
 all: $(TARGET)
 
@@ -130,3 +130,7 @@ native-check:
 clean:
 	rm -f $(TARGET) $(OBJECTS)
 	rm -rf build
+
+# Adversarial host datagrams are separate from real AmiTCP qualification.
+m4.2-check: m4.1-check
+	@python3 tests/test_net.py $(HOST_TARGET)

@@ -34,7 +34,8 @@ int amintp_udp_query(const char *host, unsigned short port,
     }
 
     he = gethostbyname((STRPTR)host);
-    if (he == 0 || he->h_addr_list == 0 || he->h_addr_list[0] == 0) {
+    if (he == 0 || he->h_addr_list == 0 || he->h_addr_list[0] == 0 ||
+        he->h_addrtype != AF_INET || he->h_length != sizeof(addr.sin_addr)) {
         CloseLibrary(SocketBase);
         SocketBase = 0;
         return 10;
@@ -68,13 +69,22 @@ int amintp_udp_query(const char *host, unsigned short port,
         tv.tv_usec = 0;
         ready = WaitSelect(fd + 1, &readfds, 0, 0, &tv, 0);
         if (ready > 0 && FD_ISSET(fd, &readfds)) {
-            LONG got = recvfrom(fd, (char *)reply, reply_capacity, 0, 0, 0);
+            struct sockaddr_in sender;
+            socklen_t sender_size = sizeof(sender);
+            LONG got;
+            memset(&sender, 0, sizeof(sender));
+            got = recvfrom(fd, (char *)reply, reply_capacity, 0,
+                           (struct sockaddr *)&sender, &sender_size);
             if (got > 0) {
                 *reply_size = (size_t)got;
                 CloseSocket(fd);
                 CloseLibrary(SocketBase);
                 SocketBase = 0;
-                return 0;
+                /* Fail closed on an unrelated peer, including a wrong UDP port. */
+                return sender_size == sizeof(sender) &&
+                       sender.sin_family == AF_INET &&
+                       sender.sin_addr.s_addr == addr.sin_addr.s_addr &&
+                       sender.sin_port == addr.sin_port ? 0 : 10;
             }
         }
     }

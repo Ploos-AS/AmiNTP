@@ -1,6 +1,6 @@
 # M4.2 AmiTCP runtime qualification
 
-Overall: **BLOCKED**, 2026-09-08. Real AmigaOS and the installed AmiTCP_NG
+Overall: **BLOCKED**, 2026-09-08 (updated A2065 capability probe). Real AmigaOS and the installed AmiTCP_NG
 library were exercised. No successful external SNTP exchange was observed.
 Neither AROS nor FS-UAE's host socket emulation is counted as AmiTCP evidence.
 
@@ -66,6 +66,19 @@ verify real outbound UDP/123. Merely reenabling FS-UAE host bsdsocket emulation
 would bypass the stack and cannot resolve this qualification blocker. No
 proprietary stack downloads or new system installation were attempted.
 
+### A2065 probe
+
+The repeatable harness was extended with `network_card = a2065` while retaining
+`bsdsocket_library = 0`. FS-UAE 3.2.35 accepted the option and its log records
+`A2065: 'slirp' 00:00:00:32:33:34` and `A2065 Z2 Ethernet`, proving that the
+emulator A2065/SLIRP backend initializes. The guest then blocks at
+`AddNetInterface Q:A2065`. The supplied template requires `device=a2065.device`,
+unit 0, but the read-only Workbench contains no `DEVS:Networks/a2065.device`
+and no `uaenet.device`; it contains only an unrelated `DEVS:ethernet.device`.
+No SANA-II interface can therefore be opened. The exact missing component is a
+compatible, legally redistributable AmigaOS A2065 SANA-II driver installed as
+`DEVS:Networks/a2065.device`. None was found locally or copied into the repo.
+
 ## Runtime observations
 
 Exact commands, guest times and RC files are in [evidence](evidence/m4.2/).
@@ -129,16 +142,13 @@ Successful-network LASTSYNC and post-SYNC LASTERROR behavior remain UNVERIFIED.
 
 ## Protocol and lifecycle review
 
-No product fix is claimed. Inspection found these outstanding issues:
+The qualification worktree includes focused protocol hardening:
 
-- `net_amiga.c` discards the sender sockaddr in `recvfrom`: source IPv4 and UDP
-  source port are not validated. The socket is not connected to the peer.
-- `query.c` supplies an all-zero request transmit timestamp. Although `sntp.c`
-  compares the response originate field, an unrelated valid-looking response
-  with zero originate can pass. **The implementation cannot safely distinguish
-  the expected reply from an unrelated UDP packet.**
-- A 48-byte receive buffer can truncate a longer datagram to 48 bytes, hiding its
-  original length from the otherwise strict parser. Short replies are rejected.
+- `net_amiga.c` and `net_posix.c` validate the response IPv4 sender and UDP
+  source port against the queried peer.
+- `query.c` creates a nonzero monotonic per-query transmit timestamp and uses a
+  49-byte receive buffer, so oversized datagrams are rejected by the strict
+  48-byte parser.
 - Parser checks mode, version, leap, stratum and originate; these checks were
   not relaxed. A zero transmit/server timestamp is subsequently rejected by
   epoch conversion. Existing tests exercise malformed protocol fields.
@@ -149,14 +159,11 @@ No product fix is claimed. Inspection found these outstanding issues:
   closed on the inspected exit paths. Actual missing-library failure was not
   exercised. CLI preserves query RC; ARexx error state was observed above.
 
-Peer address/port validation, a per-query nonzero correlation timestamp, and
-oversize-datagram detection belong in the unfinished M4.2 hardening work, with
-regression cases for wrong peer/port/originate and short/oversized datagrams.
-They are explicitly **deferred**, not fixed or qualified by this commit:
-external AmiTCP networking is unavailable, so the required affected real-runtime
-rerun cannot currently be completed. Resolve these before closing M4.2 or using
-its successful SYNC path as qualification evidence. No security guarantee is
-implied by unauthenticated SNTP even after those checks.
+Host adversarial coverage passes for valid, wrong-address, wrong-port,
+wrong-originate, short, and oversized replies; request timestamps are checked
+for nonzero and uniqueness. Real AmiTCP rerun of these checks remains blocked
+until the guest SANA-II driver is installed. No security guarantee is implied by
+unauthenticated SNTP even after these checks.
 
 ## Regression and repeatability
 

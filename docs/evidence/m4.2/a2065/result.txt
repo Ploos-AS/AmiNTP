@@ -1,0 +1,8 @@
+FS-UAE=3.2.35
+network_card=a2065
+bsdsocket_library=0
+A2065 backend log: A2065: 'slirp' 00:00:00:32:33:34
+Guest driver required: DEVS:Networks/a2065.device
+Guest driver present: NO
+Observed guest: AddNetInterface Q:A2065 did not complete
+Existing unrelated driver: DEVS:ethernet.device
