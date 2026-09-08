@@ -1,4 +1,4 @@
-name: M0/M1 qualification
+name: M0/M1/M2 qualification
 
 on:
   push:
@@ -18,5 +18,7 @@ jobs:
         run: make check
       - name: Host compile and CLI smoke
         run: make host-check
-      - name: M1 SNTP and query hardening tests
+      - name: M1 qualification
         run: make m1.3-check
+      - name: M2.1 time conversion
+        run: make m2.1-check

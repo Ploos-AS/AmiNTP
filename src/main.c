@@ -2,12 +2,14 @@
 
 #include "amintp/cli.h"
 #include "amintp/query.h"
+#include "amintp/time.h"
 #include "amintp/version.h"
 
 int main(int argc, char **argv)
 {
     struct amintp_options options;
     struct amintp_sntp_reply reply;
+    struct amintp_amiga_time amiga_time;
     int rc;
 
     rc = amintp_parse_cli(argc, argv, &options);
@@ -26,7 +28,7 @@ int main(int argc, char **argv)
     }
 
     if (!options.query) {
-        puts("AmiNTP: M1.2 only supports QUERY; clock setting arrives in M2.");
+        puts("AmiNTP: M2.1 supports QUERY only; system clock setting arrives in M2.2.");
         return 5;
     }
 
@@ -38,9 +40,19 @@ int main(int argc, char **argv)
         return rc;
     }
 
-    printf("OK SERVER=%s STRATUM=%u NTP_SECONDS=%lu NTP_FRACTION=%lu\n",
+    rc = amintp_ntp_to_amiga_time(&reply.transmit, &amiga_time);
+    if (rc != AMINTP_TIME_OK) {
+        fprintf(stderr, "AmiNTP: invalid server time: %s\n",
+                amintp_time_status_string(rc));
+        return 10;
+    }
+
+    printf("OK SERVER=%s STRATUM=%u NTP_SECONDS=%lu NTP_FRACTION=%lu "
+           "AMIGA_SECONDS=%lu AMIGA_MICROS=%lu\n",
            options.server, reply.stratum,
            (unsigned long)reply.transmit.seconds,
-           (unsigned long)reply.transmit.fraction);
+           (unsigned long)reply.transmit.fraction,
+           (unsigned long)amiga_time.seconds,
+           (unsigned long)amiga_time.micros);
     return 0;
 }

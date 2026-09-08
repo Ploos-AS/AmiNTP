@@ -8,14 +8,15 @@ HOST_CC ?= cc
 HOST_CFLAGS ?= -O2 -Wall -Wextra -Werror
 
 TARGET := AmiNTP
-COMMON_SOURCES := src/main.c src/cli.c src/version.c src/sntp.c src/query.c
+COMMON_SOURCES := src/main.c src/cli.c src/version.c src/sntp.c src/query.c src/time.c
 AMIGA_SOURCES := $(COMMON_SOURCES) src/net_amiga.c
 OBJECTS := $(AMIGA_SOURCES:.c=.o)
 HOST_TARGET := build/host/AmiNTP
 M1_TEST := build/host/test_sntp
 M13_TEST := build/host/test_query
+M21_TEST := build/host/test_time
 
-.PHONY: all clean check host-check m1-check m1.3-check native-check
+.PHONY: all clean check host-check m1-check m1.3-check m2.1-check native-check
 
 all: $(TARGET)
 
@@ -49,6 +50,11 @@ m1.3-check: m1-check
 	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(M13_TEST) tests/test_query.c src/query.c src/sntp.c
 	@$(M13_TEST)
 	@echo "M1.3 hardening tests: PASS"
+
+m2.1-check: m1.3-check
+	@mkdir -p build/host
+	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(M21_TEST) tests/test_time.c src/time.c
+	@$(M21_TEST)
 
 native-check:
 	@command -v $(CC) >/dev/null 2>&1 || { echo "ERROR: $(CC) not found"; exit 1; }
