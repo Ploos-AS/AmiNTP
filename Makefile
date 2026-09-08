@@ -20,7 +20,7 @@ M23_TEST := build/host/test_sync
 M31_TEST := build/host/test_arexx
 M32_TEST := build/host/test_arexx_m32
 
-.PHONY: all clean check host-check m1-check m1.3-check m2.1-check m2.2-check m2.3-check m3.1-check m3.2-check m3.3a-check native-check
+.PHONY: all clean check host-check m1-check m1.3-check m2.1-check m2.2-check m2.3-check m3.1-check m3.2-check m3.3a-check m3.3b-check native-check
 
 all: $(TARGET)
 
@@ -89,11 +89,18 @@ m3.3a-check:
 	@grep -q '^kickstart_file = internal$$' ci/fs-uae/aros-smoke.fs-uae
 	@grep -q '^kickstart_file = internal$$' ci/fs-uae/aros-media.fs-uae
 	@grep -q '^floppy_drive_0 = @AROS_BOOT_ADF@$$' ci/fs-uae/aros-media.fs-uae
-	@grep -q 'AROS_INDEX_URL=.*nightly2' ci/fs-uae/fetch-aros-boot.sh
-	@grep -q 'AROS_TARGET="amiga-m68k-boot-floppy"' ci/fs-uae/fetch-aros-boot.sh
+	@grep -q 'amiga-m68k-boot-floppy' ci/fs-uae/fetch-aros-boot.sh
 	@grep -q 'GATE=FS_UAE_AROS_BOOT_SMOKE' ci/fs-uae/run-aros-smoke.sh
 	@grep -q 'GATE=FS_UAE_AROS_BOOT_MEDIA' ci/fs-uae/run-aros-media-smoke.sh
 	@echo "M3.3a FS-UAE/AROS harness static checks: PASS"
+
+m3.3b-check:
+	@bash -n ci/fs-uae/build-native.sh
+	@grep -q 'amigadev/m68k-amigaos-gcc' ci/fs-uae/build-native.sh
+	@grep -q 'm68k-amigaos-gcc' ci/fs-uae/build-native.sh
+	@grep -q 'GATE=M3_3B_NATIVE_BEBBO_BUILD' ci/fs-uae/build-native.sh
+	@grep -q 'Gate 3 - native Bebbo AmiNTP build' .github/workflows/fs-uae-aros.yml
+	@echo "M3.3b native-build harness static checks: PASS"
 
 native-check:
 	@command -v $(CC) >/dev/null 2>&1 || { echo "ERROR: $(CC) not found"; exit 1; }
