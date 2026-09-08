@@ -1,0 +1,13 @@
+bsdsocket_library = 0
+set option "filesystem2" to "ro,DH1:Workbench:/home/pgo/Documents/FS-UAE/Hard Drives/Workbench,0" (result: 1)
+set option "uaehf1" to "dir,ro,DH1:Workbench:/home/pgo/Documents/FS-UAE/Hard Drives/Workbench,0" (result: 1)
+set option "filesystem2" to "ro,DH2:Net:/home/pgo/Documents/FS-UAE/Hard Drives/Net,0" (result: 1)
+set option "uaehf2" to "dir,ro,DH2:Net:/home/pgo/Documents/FS-UAE/Hard Drives/Net,0" (result: 1)
+Known ROM 'KS ROM v3.1 (A1200)' loaded
+CPU=68020, FPU=0, MMU=0, JIT=0. ~cycle-exact
+=KS ROM v3.1 (A1200) rev 40.68 (512k)
+=KS ROM v3.1 (A1200) rev 40.68 (512k)
+=KS ROM v3.1 (A1200) rev 40.68 (512k)
+=KS ROM v3.1 (A1200) rev 40.68 (512k)
+=KS ROM v3.1 (A1200) rev 40.68 (512k)
+=KS ROM v3.1 (A1200) rev 40.68 (512k)

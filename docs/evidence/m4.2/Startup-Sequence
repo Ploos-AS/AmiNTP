@@ -1,0 +1,88 @@
+DH1:C/Assign C: DH1:C
+C:Assign Q: DH0:
+C:Assign SYS: DH1:
+C:Assign LIBS: DH1:Libs
+C:Assign DEVS: DH1:Devs
+C:Assign REXX: Q:
+C:Assign T: RAM:
+C:Assign AmiTCP: Net:AmiTCP
+C:Assign ENVARC: Q:env
+C:Path C: SYS:Rexxc SYS:System ADD
+C:FailAt 21
+C:Version >Q:os-version.txt
+C:Version exec.library >>Q:os-version.txt
+C:Version dos.library >>Q:os-version.txt
+C:Date >Q:time-before.txt
+C:Version LIBS:bsdsocket.library FILE FULL >Q:socket-file.txt
+C:GetNetStatus >Q:net-start.txt
+C:Echo $RC >Q:net-start-rc.txt
+C:Version bsdsocket.library FULL >Q:socket-open.txt
+C:ShowNetStatus >Q:net-status.txt
+C:netstat >Q:interfaces-routes.txt
+C:Echo "AmiNTP VERSION" >Q:version-command.txt
+C:Date >Q:version-before.txt
+Q:AmiNTP VERSION >Q:version.txt
+C:Set versionrc $RC
+C:Echo $versionrc >Q:version-rc.txt
+C:Date >Q:version-after.txt
+C:Echo "AmiNTP QUERY SERVER=pool.ntp.org TIMEOUT=5 RETRIES=2" >Q:dns-command.txt
+C:Date >Q:dns-before.txt
+Q:AmiNTP QUERY SERVER=pool.ntp.org TIMEOUT=5 RETRIES=2 >Q:dns.txt
+C:Set dnsrc $RC
+C:Echo $dnsrc >Q:dns-rc.txt
+C:Date >Q:dns-after.txt
+C:Echo "AmiNTP QUERY SERVER=85.24.237.71 TIMEOUT=5 RETRIES=2" >Q:literal-command.txt
+C:Date >Q:literal-before.txt
+Q:AmiNTP QUERY SERVER=85.24.237.71 TIMEOUT=5 RETRIES=2 >Q:literal.txt
+C:Set literalrc $RC
+C:Echo $literalrc >Q:literal-rc.txt
+C:Date >Q:literal-after.txt
+C:Echo "AmiNTP QUERY SERVER=192.0.2.1 TIMEOUT=5 RETRIES=2" >Q:failure-command.txt
+C:Date >Q:failure-before.txt
+Q:AmiNTP QUERY SERVER=192.0.2.1 TIMEOUT=5 RETRIES=2 >Q:failure.txt
+C:Set failurerc $RC
+C:Echo $failurerc >Q:failure-rc.txt
+C:Date >Q:failure-after.txt
+C:Echo "AmiNTP QUERY SERVER=127.0.0.1 PORT=49123 TIMEOUT=5 RETRIES=2" >Q:loopback-command.txt
+C:Date >Q:loopback-before.txt
+Q:AmiNTP QUERY SERVER=127.0.0.1 PORT=49123 TIMEOUT=5 RETRIES=2 >Q:loopback.txt
+C:Set loopbackrc $RC
+C:Echo $loopbackrc >Q:loopback-rc.txt
+C:Date >Q:loopback-after.txt
+C:Echo "AmiNTP QUERY" >Q:config-command.txt
+C:Date >Q:config-before.txt
+Q:AmiNTP QUERY >Q:config.txt
+C:Set configrc $RC
+C:Echo $configrc >Q:config-rc.txt
+C:Date >Q:config-after.txt
+C:Echo "AmiNTP QUERY SERVER=85.24.237.71" >Q:override-command.txt
+C:Date >Q:override-before.txt
+Q:AmiNTP QUERY SERVER=85.24.237.71 >Q:override.txt
+C:Set overriderc $RC
+C:Echo $overriderc >Q:override-rc.txt
+C:Date >Q:override-after.txt
+If $dnsrc EQ 0
+If $literalrc EQ 0
+If $configrc EQ 0
+If $overriderc EQ 0
+C:Echo ALLOWED >Q:allow-sync
+C:Date >Q:sync-before.txt
+Q:AmiNTP SYNC SERVER=85.24.237.71 NORTC >Q:sync.txt
+C:Echo $RC >Q:sync-rc.txt
+C:Date >Q:sync-after.txt
+EndIf
+EndIf
+EndIf
+EndIf
+SYS:System/RexxMast >Q:rexxmast.txt
+C:Wait 2
+SYS:Rexxc/RX Q:ports.rexx >Q:ports-before.txt
+C:Run >Q:run.txt C:Execute Q:resident
+C:Wait 2
+SYS:Rexxc/RX Q:ports.rexx >Q:ports-running.txt
+SYS:Rexxc/RX Q:m4.2-arexx.rexx pool.ntp.org >Q:arexx.txt
+C:Echo $RC >Q:harness-rc.txt
+C:Wait 2
+SYS:Rexxc/RX Q:ports.rexx >Q:ports-after.txt
+C:Copy RAM:AmiTCP.log Q:stack-log.txt
+C:Echo DONE >Q:done.txt

@@ -1,0 +1,189 @@
+=== arexx.txt ===
+COMMAND=QUERY SERVER=pool.ntp.org
+RC=10
+RESULT=<unset>
+COMMAND=LASTSYNC
+RC=0
+RESULT=NONE
+COMMAND=LASTERROR
+RC=0
+RESULT=ERROR CODE=QUERY_FAILED
+COMMAND=QUIT
+RC=0
+RESULT=OK QUIT
+
+=== config-after.txt ===
+Tuesday 08-Sep-26 21:34:49
+
+=== config-before.txt ===
+Tuesday 08-Sep-26 21:34:49
+
+=== config-command.txt ===
+AmiNTP QUERY
+
+=== config-rc.txt ===
+10
+
+=== config.txt ===
+
+=== dns-after.txt ===
+Tuesday 08-Sep-26 21:34:33
+
+=== dns-before.txt ===
+Tuesday 08-Sep-26 21:34:32
+
+=== dns-command.txt ===
+AmiNTP QUERY SERVER=pool.ntp.org TIMEOUT=5 RETRIES=2
+
+=== dns-rc.txt ===
+10
+
+=== dns.txt ===
+
+=== done.txt ===
+DONE
+
+=== failure-after.txt ===
+Tuesday 08-Sep-26 21:34:33
+
+=== failure-before.txt ===
+Tuesday 08-Sep-26 21:34:33
+
+=== failure-command.txt ===
+AmiNTP QUERY SERVER=192.0.2.1 TIMEOUT=5 RETRIES=2
+
+=== failure-rc.txt ===
+10
+
+=== failure.txt ===
+
+=== harness-rc.txt ===
+0
+
+=== interfaces-routes.txt ===
+Name   Mtu    Address           Ipkts   Ierrs    Opkts   Oerrs  State
+lo0    1536   127.0.0.1              0       0        0       0  Up
+
+Destination          Gateway              Flags     Refs     Use  Interface
+127.0.0.1            127.0.0.1            UH          -       0  1
+
+=== literal-after.txt ===
+Tuesday 08-Sep-26 21:34:33
+
+=== literal-before.txt ===
+Tuesday 08-Sep-26 21:34:33
+
+=== literal-command.txt ===
+AmiNTP QUERY SERVER=85.24.237.71 TIMEOUT=5 RETRIES=2
+
+=== literal-rc.txt ===
+10
+
+=== literal.txt ===
+
+=== loopback-after.txt ===
+Tuesday 08-Sep-26 21:34:49
+
+=== loopback-before.txt ===
+Tuesday 08-Sep-26 21:34:33
+
+=== loopback-command.txt ===
+AmiNTP QUERY SERVER=127.0.0.1 PORT=49123 TIMEOUT=5 RETRIES=2
+
+=== loopback-rc.txt ===
+10
+
+=== loopback.txt ===
+
+=== net-start-rc.txt ===
+0
+
+=== net-start.txt ===
+AmiTCP/IP release 3 bsdsocket.library 4.1 (AmiTCP_NG 4.1.5)
+
+No networking interfaces are available and configured.
+No point-to-point networking interfaces are available and configured.
+No broadcast networking interfaces are available and configured.
+No name resolution servers are configured.
+No routing information is configured.
+The default route is not configured.
+
+=== net-status.txt ===
+Network status summary
+Local host address         = (Not configured)
+Default gateway address    = (Not configured)
+Domain name system servers = (Not configured)
+
+=== os-version.txt ===
+Kickstart 40.68, Workbench 40.42
+exec.library 40.10
+dos.library 40.3
+
+=== override-after.txt ===
+Tuesday 08-Sep-26 21:34:49
+
+=== override-before.txt ===
+Tuesday 08-Sep-26 21:34:49
+
+=== override-command.txt ===
+AmiNTP QUERY SERVER=85.24.237.71
+
+=== override-rc.txt ===
+10
+
+=== override.txt ===
+
+=== ports-after.txt ===
+REXX=1
+AMINTP=0
+
+=== ports-before.txt ===
+REXX=1
+AMINTP=0
+
+=== ports-running.txt ===
+REXX=1
+AMINTP=1
+
+=== resident-output.txt ===
+AmiNTP: ARexx resident mode on port AMINTP
+
+=== resident-rc.txt ===
+0
+
+=== rexxmast.txt ===
+ARexx Version 1.15
+Copyright � 1987 by William S. Hawes
+All Rights Reserved
+
+=== run.txt ===
+[CLI 2]
+
+=== socket-file.txt ===
+AmiTCP_NG 4.1.5 (08-Aug-26)
+
+=== socket-open.txt ===
+bsdsocket.library 4.1
+(AmiTCP_NG 4.1.5)
+
+=== stack-log.txt ===
+--- AmiTCP_NG 4.1.5 log opened (level 5) ---
+Tue Sep 08 21:34:32 2026 [note ]: AmiTCP_NG 4.1.5 starting, logging to 'ram:AmiTCP.log' at level 5
+
+=== time-before.txt ===
+Tuesday 08-Sep-26 21:34:31
+
+=== version-after.txt ===
+Tuesday 08-Sep-26 21:34:32
+
+=== version-before.txt ===
+Tuesday 08-Sep-26 21:34:32
+
+=== version-command.txt ===
+AmiNTP VERSION
+
+=== version-rc.txt ===
+0
+
+=== version.txt ===
+AmiNTP 0.3.2-m3.2

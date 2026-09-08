@@ -1,0 +1,30 @@
+M0 static checks: PASS
+cc -Iinclude -O2 -Wall -Wextra -Werror -o build/host/AmiNTP src/main.c src/cli.c src/config.c src/version.c src/sntp.c src/query.c src/time.c src/sync.c src/arexx_core.c src/arexx_ops.c src/net_posix.c src/clock_host.c src/rtc_host.c src/arexx_host.c
+M0 host smoke: PASS
+cc -Iinclude -O2 -Wall -Wextra -Werror -o build/host/test_sntp tests/test_sntp.c src/sntp.c
+M1.1 SNTP wire tests: PASS
+cc -Iinclude -O2 -Wall -Wextra -Werror -o build/host/AmiNTP src/main.c src/cli.c src/config.c src/version.c src/sntp.c src/query.c src/time.c src/sync.c src/arexx_core.c src/arexx_ops.c src/net_posix.c src/clock_host.c src/rtc_host.c src/arexx_host.c
+M1.2 host compile: PASS
+cc -Iinclude -O2 -Wall -Wextra -Werror -o build/host/test_query tests/test_query.c src/query.c src/sntp.c
+M1.3 query tests: PASS
+M1.3 hardening tests: PASS
+cc -Iinclude -O2 -Wall -Wextra -Werror -o build/host/test_time tests/test_time.c src/time.c
+M2.1 time conversion tests: PASS
+cc -Iinclude -O2 -Wall -Wextra -Werror -o build/host/test_cli tests/test_cli.c src/cli.c
+M4.1 CLI tests: PASS
+M2.2 host compile: PASS
+cc -Iinclude -O2 -Wall -Wextra -Werror -o build/host/test_sync tests/test_sync.c src/sync.c
+M2.3 RTC orchestration tests: PASS
+M2.3 RTC tests: PASS
+M3.1 dispatcher foundation covered by M3.2 superset
+cc -Iinclude -O2 -Wall -Wextra -Werror -o build/host/test_arexx_m32 tests/test_arexx_m32.c src/arexx_core.c src/version.c
+M3.2 ARexx command tests: PASS
+cc -Iinclude -O2 -Wall -Wextra -Werror -o build/host/AmiNTP src/main.c src/cli.c src/config.c src/version.c src/sntp.c src/query.c src/time.c src/sync.c src/arexx_core.c src/arexx_ops.c src/net_posix.c src/clock_host.c src/rtc_host.c src/arexx_host.c
+M3.2 ARexx host compile: PASS
+cc -Iinclude -O2 -Wall -Wextra -Werror -o build/host/test_config tests/test_config.c src/config.c src/cli.c
+AmiNTP: invalid config value on line 2
+M4.1 config tests: PASS
+M4.1 config/startup qualification: PASS
+M3.3a FS-UAE/AROS harness static checks: PASS
+M3.3b native-build harness static checks: PASS
+M3.3c guest-execution harness static checks: PASS

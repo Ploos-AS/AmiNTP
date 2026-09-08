@@ -1,0 +1,9 @@
+Starting/application HEAD=b7699d570be39fdf2c777d79628199925211bb77
+SHA256=cd78e666e8e3517ac87c13af46a31bea0e031cc1c1b70393279364ac7993a50b
+Compiler=m68k-amigaos-gcc (GCC) 6.5.0b 20260807212032
+Flags=-Os -Wall -Wextra -Werror -m68000 -mcrt=nix20
+Native build RC=0
+Host/static regression RC=0
+FS-UAE=3.2.35
+Emulator watchdog RC=124 after guest DONE
+Host DNS selection: getent ahostsv4 pool.ntp.org -> 85.24.237.71 (external UDP reachability UNVERIFIED)

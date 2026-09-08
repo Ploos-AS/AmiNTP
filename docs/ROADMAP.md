@@ -86,7 +86,9 @@ Qualification split:
 
 ### M4.2+ — TCP/IP stacks and runtime matrix
 
-- AmiTCP qualification
+- AmiTCP qualification: [M4.2 local report](M4_2_QUALIFICATION.md) — BLOCKED;
+  installed AmiTCP_NG opens but has no external interface, route or DNS;
+  reply-correlation hardening remains outstanding
 - Miami qualification
 - Roadshow qualification
 - native runtime regression matrix
