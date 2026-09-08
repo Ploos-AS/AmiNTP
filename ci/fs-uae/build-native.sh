@@ -9,13 +9,31 @@ mkdir -p "$OUT_DIR"
 docker pull "$IMAGE"
 docker image inspect "$IMAGE" --format '{{join .RepoDigests "\n"}}' | tee "$OUT_DIR/toolchain-image.txt"
 
+# The toolchain image intentionally contains the compiler, not a full host build
+# environment. Compile and link directly instead of assuming GNU make exists.
 docker run --rm \
   -v "$PWD:/work" \
   -w /work \
   "$IMAGE" \
-  sh -lc 'make clean && make all CC=m68k-amigaos-gcc LDFLAGS=-noixemul'
+  m68k-amigaos-gcc \
+    -Iinclude \
+    -Os -Wall -Wextra -Werror -m68000 \
+    -noixemul \
+    -o AmiNTP \
+    src/main.c \
+    src/cli.c \
+    src/version.c \
+    src/sntp.c \
+    src/query.c \
+    src/time.c \
+    src/sync.c \
+    src/arexx_core.c \
+    src/arexx_ops.c \
+    src/net_amiga.c \
+    src/clock_amiga.c \
+    src/rtc_amiga.c \
+    src/arexx_amiga.c
 
-mkdir -p "$OUT_DIR"
 cp AmiNTP "$OUT_DIR/AmiNTP"
 file "$OUT_DIR/AmiNTP" | tee "$OUT_DIR/file.txt"
 sha256sum "$OUT_DIR/AmiNTP" | tee "$OUT_DIR/AmiNTP.sha256"
