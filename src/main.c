@@ -1,8 +1,8 @@
 #include <stdio.h>
 
 #include "amintp/cli.h"
-#include "amintp/clock.h"
 #include "amintp/query.h"
+#include "amintp/sync.h"
 #include "amintp/time.h"
 #include "amintp/version.h"
 
@@ -39,15 +39,21 @@ int main(int argc, char **argv)
     }
 
     if (options.sync) {
-        rc = amintp_set_system_time(&amiga_time);
+        rc = amintp_apply_time(&amiga_time, !options.nortc);
+        if (rc == 5) {
+            fprintf(stderr, "WARNING SYNC SERVER=%s SYSTEM=UPDATED RTC=FAILED\n",
+                    options.server);
+            return 5;
+        }
         if (rc != 0) {
             fprintf(stderr, "AmiNTP: failed to set system clock\n");
             return rc;
         }
-        printf("OK SYNC SERVER=%s STRATUM=%u AMIGA_SECONDS=%lu AMIGA_MICROS=%lu RTC=UNCHANGED\n",
+        printf("OK SYNC SERVER=%s STRATUM=%u AMIGA_SECONDS=%lu AMIGA_MICROS=%lu RTC=%s\n",
                options.server, reply.stratum,
                (unsigned long)amiga_time.seconds,
-               (unsigned long)amiga_time.micros);
+               (unsigned long)amiga_time.micros,
+               options.nortc ? "SKIPPED" : "UPDATED");
         return 0;
     }
 
