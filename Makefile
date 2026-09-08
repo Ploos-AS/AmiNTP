@@ -20,7 +20,7 @@ M23_TEST := build/host/test_sync
 M31_TEST := build/host/test_arexx
 M32_TEST := build/host/test_arexx_m32
 
-.PHONY: all clean check host-check m1-check m1.3-check m2.1-check m2.2-check m2.3-check m3.1-check m3.2-check m3.3a-check m3.3b-check native-check
+.PHONY: all clean check host-check m1-check m1.3-check m2.1-check m2.2-check m2.3-check m3.1-check m3.2-check m3.3a-check m3.3b-check m3.3c-check native-check
 
 all: $(TARGET)
 
@@ -101,6 +101,15 @@ m3.3b-check:
 	@grep -q 'GATE=M3_3B_NATIVE_BEBBO_BUILD' ci/fs-uae/build-native.sh
 	@grep -q 'Gate 3 - native Bebbo AmiNTP build' .github/workflows/fs-uae-aros.yml
 	@echo "M3.3b native-build harness static checks: PASS"
+
+m3.3c-check:
+	@bash -n ci/fs-uae/fetch-aros-system.sh
+	@bash -n ci/fs-uae/run-aros-guest-smoke.sh
+	@grep -q 'amiga-m68k-boot-iso' ci/fs-uae/fetch-aros-system.sh
+	@grep -q '^hard_drive_0 = @AROS_ROOT@$$' ci/fs-uae/aros-guest.fs-uae
+	@grep -q 'GATE=M3_3C_AROS_GUEST_EXECUTION' ci/fs-uae/run-aros-guest-smoke.sh
+	@grep -q 'Gate 4 - execute AmiNTP inside AROS guest' .github/workflows/fs-uae-aros.yml
+	@echo "M3.3c guest-execution harness static checks: PASS"
 
 native-check:
 	@command -v $(CC) >/dev/null 2>&1 || { echo "ERROR: $(CC) not found"; exit 1; }
