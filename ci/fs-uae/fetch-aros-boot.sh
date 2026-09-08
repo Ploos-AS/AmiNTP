@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-AROS_DATE=20260829
+AROS_DATE=20260907
 AROS_ARCHIVE="AROS-${AROS_DATE}-amiga-m68k-boot-floppy.lha"
-AROS_URL="https://downloads.sourceforge.net/project/aros/nightly2/${AROS_DATE}/Binaries/${AROS_ARCHIVE}"
+AROS_URL="https://sourceforge.net/projects/aros/files/nightly2/${AROS_DATE}/Binaries/${AROS_ARCHIVE}/download"
 OUT_DIR="${1:-build/fs-uae/aros-boot}"
 
 mkdir -p "$OUT_DIR"
