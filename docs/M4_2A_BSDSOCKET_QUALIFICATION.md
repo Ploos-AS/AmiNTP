@@ -93,3 +93,19 @@ invocation. This distinguishes the latest failure from the earlier
 boot/startup sequencing problem before process execution. No probe result is
 classified as a runtime PASS until the startup sequence itself is observed to
 run.
+
+## Boot/startup isolation
+
+The committed M3.4 FS-UAE configuration boots `DH0:Qualification` at priority
+10 and mounts read-only Workbench as `DH1` at priority 0. Reusing that exact
+configuration proved the generated startup sequence does execute when its
+commands are valid: absolute `DH0:` sentinels produced `BOOT_START`, `BEFORE`,
+`RC=0`, `AFTER`, and `DONE` for Probe A. The earlier boot-only attempt stalled
+because `C:Assign` with no arguments is an interactive command; removing that
+command produced the expected completion markers.
+
+Probe A (`int main(void){return 0;}`) returned RC 0 with AFTER/DONE markers in
+both socket modes. The current AmiNTP VERSION run now reaches `BOOT_START` and
+`BEFORE`, but its output is `locale.library failed to load` and no RC/AFTER/DONE
+marker is produced. This is a deterministic post-invocation failure, independent
+of `bsdsocket_library` mode. Networking remains untested.
