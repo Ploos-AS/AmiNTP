@@ -88,7 +88,9 @@ Qualification split:
 
 - AmiTCP qualification: [M4.2 local report](M4_2_QUALIFICATION.md) — BLOCKED;
   installed AmiTCP_NG opens but has no external interface, route or DNS;
-  reply-correlation hardening remains outstanding
+  FS-UAE A2065/LANCE compatibility remains blocked. SNTP hardening is complete:
+  peer address/port validation, nonzero per-query originate correlation,
+  oversized datagram rejection, and adversarial host tests all pass.
 - Miami qualification
 - Roadshow qualification
 - native runtime regression matrix

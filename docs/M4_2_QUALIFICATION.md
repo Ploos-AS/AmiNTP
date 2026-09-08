@@ -314,3 +314,12 @@ The evidence directory contains only our scripts/configuration and non-sensitive
 runtime/build output. Original ROM, Workbench, AmiTCP distributions, binaries,
 and emulator disks are not committed. The existing installation remains intact.
 M4.2 mandatory criteria 2-10 are not all satisfied; overall **BLOCKED**.
+### WinUAE cross-emulator attempt
+
+The requested WinUAE comparison could not be performed on this local machine.
+No WinUAE executable or Windows package is installed, and no Wine runtime is
+available to run one. The only installed emulator is FS-UAE 3.2.35. Therefore
+there is no WinUAE version, A2065 diagnostic result, SANA-II result, or network
+result to report; the existing FS-UAE evidence must not be relabeled as WinUAE
+evidence. A Windows/WinUAE environment remains required for the cross-emulator
+comparison.
