@@ -4,6 +4,20 @@ Overall: **BLOCKED**, 2026-09-08 (Aminet driver probe). Real AmigaOS and the ins
 library were exercised. No successful external SNTP exchange was observed.
 Neither AROS nor FS-UAE's host socket emulation is counted as AmiTCP evidence.
 
+### Hardware-profile correction
+
+The qualification runs documented here used the existing A1200/68020 profile.
+That is not a physically valid A2065 target: Commodore's A2065 is a Zorro-II
+big-box expansion card for systems such as the A2000/A3000/A4000, whereas the
+A1200 does not provide a Zorro-II slot. FS-UAE's log can expose an emulated Zorro
+card while retaining the A1200 model, but that does not make the profile an
+A2065-compatible Amiga configuration. The Lance-Test failure and both driver
+failures must therefore be treated as an invalid-hardware-profile result, not
+as final evidence that a real A2065 or a correctly emulated big-box system
+cannot work. A future M4.2 attempt must use a big-box FS-UAE profile with a
+Zorro-II bus (and corresponding AmigaOS system configuration) before drawing
+driver or AmiTCP conclusions.
+
 ## Revision, build and environment
 
 Starting HEAD for the prior report: `b7699d570be39fdf2c777d79628199925211bb77` (M4.1).
