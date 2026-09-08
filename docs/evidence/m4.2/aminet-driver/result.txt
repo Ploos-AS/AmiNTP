@@ -1,0 +1,9 @@
+SOURCE=https://aminet.net/dev/misc/SANA.lha
+PACKAGE=dev/misc/SANA.lha
+PACKAGE_DATE=1992-08-01
+PACKAGE_RELEASE=1.4
+ARCHIVE_SHA256=450c4cfc21f38c65e1de46fbb5919a8c4f0a4afc4894fc8c54f15d32c35ec49b
+DRIVER_SHA256=c6966e30fa7f46b4ab646ed60e6d901e228fd8817dd901ba7833a89c832969cd
+DRIVER_VERSION=a2065 2.14 (23.6.92), ReadMe.BuildNumber V1.4 built 1992-11-12
+FS_UAE=A2065 slirp initialized; bsdsocket_library=0
+RESULT=AddNetInterface did not complete before watchdog; no guest interface

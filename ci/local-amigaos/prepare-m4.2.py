@@ -4,6 +4,7 @@ Run from the repository root after the native build. Use a NEW output directory.
 No OS, ROM, or stack distribution files are copied. Inspect evidence manually.
 """
 import argparse
+import hashlib
 from pathlib import Path
 import shutil
 
@@ -11,12 +12,14 @@ p = argparse.ArgumentParser(description=__doc__)
 p.add_argument('--workbench', type=Path, required=True)
 p.add_argument('--net', type=Path, required=True)
 p.add_argument('--rom', type=Path, required=True)
+p.add_argument('--driver', type=Path, required=True,
+               help='local extracted a2065.device; never copied into the repo')
 p.add_argument('--ipv4', required=True, help='Current public NTP server IPv4 address')
 p.add_argument('--out', type=Path, required=True)
 a = p.parse_args()
 import ipaddress
 ipaddress.IPv4Address(a.ipv4)
-for path in (a.workbench, a.net, a.rom, Path('AmiNTP')):
+for path in (a.workbench, a.net, a.rom, a.driver, Path('AmiNTP')):
     if not path.exists():
         p.error(f'Missing {path}')
 a.out.mkdir(parents=True, exist_ok=False)
@@ -28,6 +31,10 @@ shutil.copyfile('AmiNTP', guest / 'AmiNTP')
 shutil.copyfile('ci/local-amigaos/m4.2-arexx.rexx', guest / 'm4.2-arexx.rexx')
 shutil.copyfile('docs/evidence/m3.4/ports.rexx', guest / 'ports.rexx')
 shutil.copyfile(a.workbench / 'Storage/NetInterfaces/A2065', guest / 'A2065')
+(guest / 'Networks').mkdir()
+shutil.copyfile(a.driver, guest / 'Networks/a2065.device')
+(guest / 'driver-sha256.txt').write_text(
+    hashlib.sha256(a.driver.read_bytes()).hexdigest() + '  a2065.device\n')
 (guest / 'env/AmiNTP/AmiNTP.conf').write_text(
     'SERVER=pool.ntp.org\nPORT=123\nTIMEOUT=5\nRETRIES=2\n')
 (out / 'qualification.fs-uae').write_text(f'''[fs-uae]
@@ -37,6 +44,7 @@ fast_memory = 8192
 fpu = 0
 bsdsocket_library = 0
 network_card = a2065
+a2065 = slirp
 kickstart_file = {a.rom.resolve()}
 hard_drive_0 = {guest}
 hard_drive_0_label = Qualification
@@ -75,6 +83,7 @@ C:Echo $RC >Q:net-start-rc.txt
 C:Version bsdsocket.library FULL >Q:socket-open.txt
 C:ShowNetStatus >Q:net-status.txt
 C:netstat >Q:interfaces-routes.txt
+C:Assign DEVS:Networks Q:Networks
 C:AddNetInterface Q:A2065 >Q:network-add.txt
 C:Echo $RC >Q:network-add-rc.txt
 C:ShowNetStatus >Q:network-status-after-add.txt

@@ -1,12 +1,13 @@
 # M4.2 AmiTCP runtime qualification
 
-Overall: **BLOCKED**, 2026-09-08 (updated A2065 capability probe). Real AmigaOS and the installed AmiTCP_NG
+Overall: **BLOCKED**, 2026-09-08 (Aminet driver probe). Real AmigaOS and the installed AmiTCP_NG
 library were exercised. No successful external SNTP exchange was observed.
 Neither AROS nor FS-UAE's host socket emulation is counted as AmiTCP evidence.
 
 ## Revision, build and environment
 
-Starting HEAD: `b7699d570be39fdf2c777d79628199925211bb77` (M4.1).
+Starting HEAD for the prior report: `b7699d570be39fdf2c777d79628199925211bb77` (M4.1).
+This rerun started at `abcd52a830da5b36a44177bbd08003ec5ef0959a`.
 Executed `git fetch origin`, `git checkout main`, `git pull --ff-only origin main`
 in that order, then recorded HEAD and verified a clean worktree. Git metadata
 writes required sandbox escalation. Application sources remain at that revision.
@@ -78,6 +79,27 @@ and no `uaenet.device`; it contains only an unrelated `DEVS:ethernet.device`.
 No SANA-II interface can therefore be opened. The exact missing component is a
 compatible, legally redistributable AmigaOS A2065 SANA-II driver installed as
 `DEVS:Networks/a2065.device`. None was found locally or copied into the repo.
+
+### Aminet driver attempt
+
+The official [dev/misc/SANA.lha](https://aminet.net/package/dev/misc/SANA) was
+downloaded to `/tmp` only. Aminet identifies it as Commodore's official SANA-II
+developer package, release 1.4, dated 1992-08-01. Its nested
+`sana2developer.lzh` contains `devs/networks/a2065.device`; `ReadMe.BuildNumber`
+reports revision V1.4 built 1992-11-12. Archive SHA-256:
+`450c4cfc21f38c65e1de46fbb5919a8c4f0a4afc4894fc8c54f15d32c35ec49b`.
+Extracted driver SHA-256:
+`c6966e30fa7f46b4ab646ed60e6d901e228fd8817dd901ba7833a89c832969cd`.
+
+The preparation harness now requires `--driver`, hashes it into guest evidence,
+and copies it only to disposable `Networks/a2065.device`. The original
+Workbench remains read-only and neither archive nor driver is tracked. With
+`network_card = a2065`, explicit `a2065 = slirp`, and `bsdsocket_library = 0`,
+FS-UAE again logged the A2065 SLIRP card. AmiTCP reported loopback-only status,
+then `AddNetInterface Q:A2065` produced no RC or post-add status before the
+watchdog; the same behavior occurred with and without `requiresinitdelay=yes`.
+Driver presence is proven, but device open/interface creation is not; no
+address, route, DNS, or UDP proof exists.
 
 ## Runtime observations
 
@@ -184,6 +206,7 @@ To repeat the probe after the native build, use a fresh output directory:
 python3 ci/local-amigaos/prepare-m4.2.py \
   --workbench '/path/to/existing/Workbench' \
   --net '/path/to/existing/Net' --rom '/path/to/existing/a1200.rom' \
+  --driver '/path/to/extracted/a2065.device' \
   --ipv4 CURRENT_NTP_IPV4 --out build/m4.2/new-run
 timeout 55s fs-uae build/m4.2/new-run/qualification.fs-uae
 ```
