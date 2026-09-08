@@ -2,6 +2,7 @@
 
 #include "amintp/arexx.h"
 #include "amintp/cli.h"
+#include "amintp/config.h"
 #include "amintp/query.h"
 #include "amintp/sync.h"
 #include "amintp/time.h"
@@ -23,6 +24,9 @@ int main(int argc, char **argv)
         puts("AmiNTP: ARexx resident mode on port AMINTP");
         return amintp_arexx_run();
     }
+
+    rc = amintp_load_config(AMINTP_CONFIG_PATH, &options);
+    if (rc != 0) return rc;
 
     if (options.server == 0) { amintp_print_help(); return 0; }
     if (!options.query && !options.sync) {

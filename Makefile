@@ -8,7 +8,7 @@ HOST_CC ?= cc
 HOST_CFLAGS ?= -O2 -Wall -Wextra -Werror
 
 TARGET := AmiNTP
-COMMON_SOURCES := src/main.c src/cli.c src/version.c src/sntp.c src/query.c src/time.c src/sync.c src/arexx_core.c src/arexx_ops.c
+COMMON_SOURCES := src/main.c src/cli.c src/config.c src/version.c src/sntp.c src/query.c src/time.c src/sync.c src/arexx_core.c src/arexx_ops.c
 AMIGA_SOURCES := $(COMMON_SOURCES) src/net_amiga.c src/clock_amiga.c src/rtc_amiga.c src/arexx_amiga.c
 OBJECTS := $(AMIGA_SOURCES:.c=.o)
 HOST_TARGET := build/host/AmiNTP
@@ -19,8 +19,9 @@ M22_TEST := build/host/test_cli
 M23_TEST := build/host/test_sync
 M31_TEST := build/host/test_arexx
 M32_TEST := build/host/test_arexx_m32
+M41_TEST := build/host/test_config
 
-.PHONY: all clean check host-check m1-check m1.3-check m2.1-check m2.2-check m2.3-check m3.1-check m3.2-check m3.3a-check m3.3b-check m3.3c-check native-check
+.PHONY: all clean check host-check m1-check m1.3-check m2.1-check m2.2-check m2.3-check m3.1-check m3.2-check m3.3a-check m3.3b-check m3.3c-check m4.1-check native-check
 
 all: $(TARGET)
 
@@ -110,6 +111,14 @@ m3.3c-check:
 	@grep -q 'GATE=M3_3C_AROS_GUEST_EXECUTION' ci/fs-uae/run-aros-guest-smoke.sh
 	@grep -q 'Gate 4 - execute AmiNTP inside AROS guest' .github/workflows/fs-uae-aros.yml
 	@echo "M3.3c guest-execution harness static checks: PASS"
+
+m4.1-check: m3.2-check
+	@mkdir -p build/host
+	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(M41_TEST) tests/test_config.c src/config.c src/cli.c
+	@$(M41_TEST)
+	@grep -q 'AMINTP_CONFIG_PATH "ENVARC:AmiNTP/AmiNTP.conf"' include/amintp/config.h
+	@grep -q '^SERVER=' examples/AmiNTP.conf
+	@echo "M4.1 config/startup qualification: PASS"
 
 native-check:
 	@command -v $(CC) >/dev/null 2>&1 || { echo "ERROR: $(CC) not found"; exit 1; }

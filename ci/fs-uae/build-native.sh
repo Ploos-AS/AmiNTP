@@ -22,6 +22,7 @@ docker run --rm \
     -o AmiNTP \
     src/main.c \
     src/cli.c \
+    src/config.c \
     src/version.c \
     src/sntp.c \
     src/query.c \

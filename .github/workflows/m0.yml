@@ -1,4 +1,4 @@
-name: M0/M1/M2/M3 qualification
+name: M0/M1/M2/M3/M4 qualification
 
 on:
   push:
@@ -28,3 +28,5 @@ jobs:
         run: make m2.3-check
       - name: M3.2 ARexx commands
         run: make m3.2-check
+      - name: M4.1 configuration and startup
+        run: make m4.1-check

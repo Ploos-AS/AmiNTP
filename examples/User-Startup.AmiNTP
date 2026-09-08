@@ -1,0 +1,14 @@
+; AmiNTP startup example for S:User-Startup
+; Assumes AmiNTP is installed in C: and config in ENVARC:AmiNTP/AmiNTP.conf
+
+; Query only, never changes the clock:
+; C:AmiNTP QUERY
+
+; Synchronize system clock and RTC:
+C:AmiNTP SYNC
+
+; Or skip RTC writes:
+; C:AmiNTP SYNC NORTC
+
+; Optional ARexx resident service:
+; Run >NIL: C:AmiNTP RESIDENT

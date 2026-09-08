@@ -76,8 +76,16 @@ Qualification split:
 
 ## M4 — Integration
 
-- configuration file
+### M4.1 — Configuration and startup
+
+- `ENVARC:AmiNTP/AmiNTP.conf`
+- strict SERVER/PORT/TIMEOUT/RETRIES defaults
+- CLI-over-config precedence
 - startup examples
+- host/static regression and native-build integration
+
+### M4.2+ — TCP/IP stacks and runtime matrix
+
 - AmiTCP qualification
 - Miami qualification
 - Roadshow qualification

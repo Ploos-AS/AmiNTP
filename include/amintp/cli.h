@@ -1,11 +1,18 @@
 #ifndef AMINTP_CLI_H
 #define AMINTP_CLI_H
 
+#define AMINTP_SERVER_MAX 127
+
 struct amintp_options {
     const char *server;
+    char server_storage[AMINTP_SERVER_MAX + 1];
     unsigned short port;
     unsigned timeout_seconds;
     unsigned retries;
+    int server_set;
+    int port_set;
+    int timeout_set;
+    int retries_set;
     int query;
     int sync;
     int nortc;
