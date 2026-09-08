@@ -93,6 +93,7 @@ s = f"""DH1:C/Assign C: DH1:C
 C:Assign Q: DH0:
 C:Assign SYS: DH1:
 C:Assign LIBS: DH1:Libs
+C:Assign LOCALE: DH1:Locale
 C:Assign DEVS: DH1:Devs
 C:Assign REXX: Q:
 C:Assign T: RAM:
