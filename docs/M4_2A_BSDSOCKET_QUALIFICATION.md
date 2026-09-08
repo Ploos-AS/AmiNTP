@@ -48,3 +48,16 @@ same native/libnix startup boundary. The next required step is to reproduce the
 known M3.4 startup environment (including its complete system assignments and
 locale setup) and isolate the `locale.library` load failure before retrying
 M4.2a.
+
+## M3.4 comparison
+
+The known-good M3.4 sequence assigns `C:`, `SYS:`, `LIBS:`, `DEVS:`, `REXX:`,
+and `T:` and establishes `C:`/`SYS:` search paths before launching AmiNTP.
+The earlier M4.2a minimal image omitted standard `L:`, `FONTS:`, `ENV:`, and
+`S:` assignments and did not set an explicit stack. The reusable harness now
+makes those standard assignments and `STACK 8192` explicit. The guest still
+needs a fresh run to prove that this resolves the locale startup error.
+
+Tiny empty/output probe binaries were built with Bebbo GCC and prepared, but
+the disposable emulator runs did not complete a shell return/AFTER marker, so
+no probe PASS is claimed yet.

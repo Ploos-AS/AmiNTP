@@ -92,13 +92,19 @@ automatic_input_grab = 0
 s = f"""DH1:C/Assign C: DH1:C
 C:Assign Q: DH0:
 C:Assign SYS: DH1:
+C:Assign C: DH1:C
 C:Assign LIBS: DH1:Libs
-C:Assign LOCALE: DH1:Locale
 C:Assign DEVS: DH1:Devs
+C:Assign L: DH1:L
+C:Assign FONTS: DH1:Fonts
+C:Assign LOCALE: DH1:Locale
+C:Assign ENV: RAM:Env
+C:Assign ENVARC: Q:env
+C:Assign S: DH1:S
 C:Assign REXX: Q:
 C:Assign T: RAM:
+C:Stack 8192
 {('C:Assign AmiTCP: Net:AmiTCP' if not a.bsdsocket else '')}
-C:Assign ENVARC: Q:env
 C:Path C: SYS:Rexxc SYS:System ADD
 C:FailAt 21
 """
