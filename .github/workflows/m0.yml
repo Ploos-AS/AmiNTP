@@ -1,4 +1,4 @@
-name: M0/M1/M2 qualification
+name: M0/M1/M2/M3 qualification
 
 on:
   push:
@@ -20,9 +20,7 @@ jobs:
         run: make host-check
       - name: M1 qualification
         run: make m1.3-check
-      - name: M2.1 time conversion
-        run: make m2.1-check
-      - name: M2.2 system clock logic
-        run: make m2.2-check
-      - name: M2.3 RTC logic
+      - name: M2 qualification
         run: make m2.3-check
+      - name: M3.1 ARexx foundation
+        run: make m3.1-check

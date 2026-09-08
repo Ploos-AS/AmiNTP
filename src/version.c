@@ -2,5 +2,5 @@
 
 const char *amintp_version_string(void)
 {
-    return "AmiNTP 0.1.0-m0";
+    return "AmiNTP 0.3.1-m3.1";
 }

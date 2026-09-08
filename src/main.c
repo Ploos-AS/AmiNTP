@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "amintp/arexx.h"
 #include "amintp/cli.h"
 #include "amintp/query.h"
 #include "amintp/sync.h"
@@ -16,8 +17,14 @@ int main(int argc, char **argv)
     rc = amintp_parse_cli(argc, argv, &options);
     if (rc != 0) return rc;
     if (options.show_version) { puts(amintp_version_string()); return 0; }
-    if (options.show_help || options.server == 0) { amintp_print_help(); return 0; }
+    if (options.show_help) { amintp_print_help(); return 0; }
 
+    if (options.resident) {
+        puts("AmiNTP: ARexx resident mode on port AMINTP");
+        return amintp_arexx_run();
+    }
+
+    if (options.server == 0) { amintp_print_help(); return 0; }
     if (!options.query && !options.sync) {
         puts("AmiNTP: specify QUERY or SYNC.");
         return 5;

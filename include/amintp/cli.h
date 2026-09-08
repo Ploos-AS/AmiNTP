@@ -9,6 +9,7 @@ struct amintp_options {
     int query;
     int sync;
     int nortc;
+    int resident;
     int show_help;
     int show_version;
 };
