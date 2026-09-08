@@ -9,9 +9,9 @@ mkdir -p "$OUT_DIR"
 docker pull "$IMAGE"
 docker image inspect "$IMAGE" --format '{{join .RepoDigests "\n"}}' | tee "$OUT_DIR/toolchain-image.txt"
 
-# The project Makefile uses Bebbo's default native runtime for AmigaOS 2.x+.
-# Keep CI aligned with that contract; do not force libnix via -noixemul.
-# This still produces a native Amiga executable and does not require ixemul.library.
+# Use libnix for the compact native AmigaOS 2.x+ runtime. AmiNTP avoids the
+# standard library-base symbol names, so optional resources are opened lazily
+# by the code paths that actually need them instead of by libnix startup.
 docker run --rm \
   -v "$PWD:/work" \
   -w /work \
@@ -32,7 +32,8 @@ docker run --rm \
     src/net_amiga.c \
     src/clock_amiga.c \
     src/rtc_amiga.c \
-    src/arexx_amiga.c
+    src/arexx_amiga.c \
+    -mcrt=nix20
 
 cp AmiNTP "$OUT_DIR/AmiNTP"
 file "$OUT_DIR/AmiNTP" | tee "$OUT_DIR/file.txt"

@@ -2,6 +2,7 @@
 #include <exec/libraries.h>
 #include <exec/ports.h>
 #include <proto/exec.h>
+#define RexxSysBase AmiNTPRexxSysBase
 #include <proto/rexxsyslib.h>
 #include <rexx/storage.h>
 #include <rexx/rxslib.h>
@@ -10,7 +11,7 @@
 #include "amintp/arexx.h"
 #include "amintp/platform.h"
 
-struct RxsLib *RexxSysBase;
+struct RxsLib *AmiNTPRexxSysBase;
 
 static void reply_rexx(struct RexxMsg *msg, int rc, const char *result)
 {

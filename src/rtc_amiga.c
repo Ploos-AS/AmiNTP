@@ -1,11 +1,12 @@
 #include <exec/libraries.h>
+#define BattClockBase AmiNTPBattClockBase
 #include <proto/battclock.h>
 #include <proto/exec.h>
 #include <resources/battclock.h>
 
 #include "amintp/rtc.h"
 
-struct Library *BattClockBase;
+struct Library *AmiNTPBattClockBase;
 
 int amintp_set_rtc_time(const struct amintp_amiga_time *time)
 {

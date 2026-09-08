@@ -5,6 +5,7 @@
 #include <exec/types.h>
 #include <exec/libraries.h>
 #include <proto/exec.h>
+#define SocketBase AmiNTPSocketBase
 #include <proto/bsdsocket.h>
 #include <libraries/bsdsocket.h>
 #include <netdb.h>
@@ -14,7 +15,7 @@
 
 #include "amintp/net.h"
 
-struct Library *SocketBase;
+struct Library *AmiNTPSocketBase;
 
 int amintp_udp_query(const char *host, unsigned short port,
                      const unsigned char *request, size_t request_size,
