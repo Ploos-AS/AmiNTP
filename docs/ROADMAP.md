@@ -50,7 +50,7 @@ Baseline:
 - large-offset sanity checks
 - stable success/failure reporting
 
-## M3 — ARexx
+## M3 — ARexx and native runtime qualification
 
 Resident mode with public port `AMINTP`.
 
@@ -67,6 +67,12 @@ Initial commands:
 - QUIT
 
 Results must be stable and machine-readable.
+
+Qualification split:
+
+- M3.3a-c: GitHub-hosted FS-UAE/AROS qualification for emulator boot, native Bebbo 68000 build and real guest CLI execution.
+- M3.4: local FS-UAE or real-AmigaOS qualification for the actual ARexx message path with RexxMast and public port `AMINTP`.
+- AROS is not treated as proof of ARexx compatibility; M3.4 must run on AmigaOS.
 
 ## M4 — Integration
 

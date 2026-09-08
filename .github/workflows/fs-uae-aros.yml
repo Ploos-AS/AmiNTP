@@ -47,5 +47,21 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: fs-uae-aros-qualification
-          path: build/fs-uae/
+          path: |
+            build/fs-uae/aros-boot/result.txt
+            build/fs-uae/aros-boot/source.txt
+            build/fs-uae/aros-boot/archive.sha256
+            build/fs-uae/aros-boot/fs-uae.log
+            build/fs-uae/aros-boot/fs-uae-version.txt
+            build/fs-uae/native/AmiNTP
+            build/fs-uae/native/AmiNTP.sha256
+            build/fs-uae/native/file.txt
+            build/fs-uae/native/result.txt
+            build/fs-uae/native/toolchain-image.txt
+            build/fs-uae/aros-system/source.txt
+            build/fs-uae/aros-system/archive.sha256
+            build/fs-uae/aros-guest/result.txt
+            build/fs-uae/aros-guest/fs-uae.log
+            build/fs-uae/aros-guest/fs-uae-version.txt
+            build/fs-uae/aros-guest/aros-guest.fs-uae
           if-no-files-found: warn
