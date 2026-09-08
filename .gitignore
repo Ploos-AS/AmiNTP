@@ -1,0 +1,6 @@
+AmiNTP
+*.o
+*.d
+*.lha
+build/
+dist/
