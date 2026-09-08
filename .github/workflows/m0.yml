@@ -24,3 +24,5 @@ jobs:
         run: make m2.1-check
       - name: M2.2 system clock logic
         run: make m2.2-check
+      - name: M2.3 RTC logic
+        run: make m2.3-check
