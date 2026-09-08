@@ -1,0 +1,20 @@
+name: M0 qualification
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  m0:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static platform contract
+        run: make check
+      - name: Host compile and CLI smoke
+        run: make host-check

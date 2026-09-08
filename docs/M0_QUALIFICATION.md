@@ -14,19 +14,30 @@ M0 establishes the AmiNTP repository and freezes the minimum platform contract.
 - ARexx port reserved as `AMINTP`
 - networking intentionally deferred to M1
 
-## Static qualification
+## Automated qualification
 
-Run:
+The repository has two host-side gates:
 
 ```sh
 make check
+make host-check
 ```
 
-Expected:
+`make check` validates the frozen platform/build contract. `make host-check`
+compiles the portable M0 CLI sources with the host C compiler and verifies
+VERSION, HELP, SERVER parsing, and the expected M0 return code.
+
+GitHub Actions runs both gates on pushes to `main`, pull requests, and manual
+dispatches.
+
+Expected output includes:
 
 ```text
 M0 static checks: PASS
+M0 host smoke: PASS
 ```
+
+Host compilation is not a substitute for the native Amiga build gate.
 
 ## Native build qualification
 
@@ -46,7 +57,7 @@ The compile command must contain:
 
 The resulting executable must be an AmigaOS loadseg()-compatible executable.
 
-## CLI smoke qualification
+## Native CLI smoke qualification
 
 On an Amiga or emulator:
 
@@ -77,5 +88,9 @@ M0 is complete when:
 2. platform contract is documented and encoded in headers;
 3. build explicitly targets 68000;
 4. CLI skeleton parses help/version/server;
-5. static checks pass;
-6. native build/runtime qualification is ready to execute with the toolchain.
+5. automated static and host smoke gates pass;
+6. native Bebbo build produces an AmigaOS loadseg() executable;
+7. native CLI smoke passes on AmigaOS 2.04+.
+
+Until items 6 and 7 have been observed, M0 is code-complete but native
+qualification remains pending.
