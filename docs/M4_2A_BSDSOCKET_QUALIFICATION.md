@@ -61,3 +61,24 @@ needs a fresh run to prove that this resolves the locale startup error.
 Tiny empty/output probe binaries were built with Bebbo GCC and prepared, but
 the disposable emulator runs did not complete a shell return/AFTER marker, so
 no probe PASS is claimed yet.
+
+## Clean rebuild and probe matrix
+
+A mandatory clean rebuild was completed with every compile and link command
+using `-m68000 -mcrt=nix20`; all 14 objects received fresh timestamps. The
+AmiNTP SHA-256 is `e73f0f7e46fa3fa5da0b0be9610eb5452dd15f73d7e1c696216dc28cf5682810`.
+Symbol inspection shows the intended application bases
+`AmiNTPSocketBase`, `AmiNTPBattClockBase`, and `AmiNTPRexxSysBase`; the CRT
+also references its canonical `_LocaleBase`. No canonical application
+`SocketBase`, `BattClockBase`, or `RexxSysBase` was found.
+
+Four independently compiled probes were produced with the same flags:
+
+- empty return: `e473bcec07ad491bab4ba7fac897a8a72f67103a851ffc3974c355f3d47db312`
+- stdio `puts`: `91102230475283111dda3fc7fb820e84deb73ebdf21823798dfcd6bbf4b794cd`
+- DOS `Write`: `15f3b9f2e1d1f11ac1f16e6a48318726e498485ba64fb92240b4c829667ad953`
+- direct `locale.library` open: `2320941a68f4f2c0cc8dd7f6e83dfc0176d7f82b74941d9af257e02df597867e`
+
+The guest probe matrix and direct `Version`/`EXISTS` checks still require a
+completed disposable FS-UAE run; no result is promoted to PASS until BEFORE,
+output, RC, and AFTER are all captured for both socket settings.
