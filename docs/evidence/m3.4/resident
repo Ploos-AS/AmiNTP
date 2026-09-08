@@ -1,0 +1,2 @@
+Q:AmiNTP RESIDENT >Q:resident-output.txt
+Echo $RC >Q:resident-rc.txt

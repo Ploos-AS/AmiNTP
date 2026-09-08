@@ -1,0 +1,6 @@
+Compiler: m68k-amigaos-gcc (GCC) 6.5.0b 20260807212032
+Compiler path: /opt/amiga/bin/m68k-amigaos-gcc
+Target: -m68000 -mcrt=nix20 (compile and link)
+File: AmigaOS loadseg()ble executable/binary
+SHA-256: 535b84646c53c1dabfc94fffa586962f9fa89fe2a334979a091b18215c8c23a4
+FS-UAE: 3.2.35

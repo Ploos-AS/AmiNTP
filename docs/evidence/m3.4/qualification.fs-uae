@@ -1,0 +1,20 @@
+[fs-uae]
+amiga_model = A1200/020
+chip_memory = 2048
+fast_memory = 8192
+fpu = 0
+kickstart_file = /home/pgo/Documents/FS-UAE/Kickstarts/amiga-os-310-a1200.rom
+hard_drive_0 = /home/pgo/Projects/Ploos-AS/AmiNTP/build/m3.4/guest
+hard_drive_0_label = Qualification
+hard_drive_0_priority = 10
+hard_drive_1 = /home/pgo/Documents/FS-UAE/Hard Drives/Workbench
+hard_drive_1_label = Workbench
+hard_drive_1_read_only = 1
+hard_drive_1_priority = 0
+base_dir = /home/pgo/Projects/Ploos-AS/AmiNTP/build/m3.4/fs-uae
+logs_dir = /home/pgo/Projects/Ploos-AS/AmiNTP/build/m3.4/logs
+fullscreen = 0
+window_width = 800
+window_height = 600
+sound_output = 0
+automatic_input_grab = 0

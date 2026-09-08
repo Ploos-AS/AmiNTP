@@ -1,0 +1,6 @@
+COMMAND=PING
+RC=0
+RESULT=PONG
++++ Error 41 in line 35: Invalid expression
++++ Error 41 in line 9: Invalid expression
+Command returned 10/41: Invalid expression

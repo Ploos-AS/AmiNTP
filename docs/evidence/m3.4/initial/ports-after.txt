@@ -1,0 +1,2 @@
+REXX=1
+AMINTP=1

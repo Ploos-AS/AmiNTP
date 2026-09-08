@@ -32,11 +32,11 @@ checkcmd:
   SAY 'COMMAND=' || command
   SAY 'RC=' || cmdrc
   SAY 'RESULT=' || cmdresult
-  IF cmdrc <> 0 THEN DO
+  IF cmdrc ~= 0 THEN DO
     failures = failures + 1
     RETURN
   END
-  IF expected <> '' & POS(expected, cmdresult) = 0 THEN DO
+  IF expected ~= '' & POS(expected, cmdresult) = 0 THEN DO
     failures = failures + 1
   END
 RETURN

@@ -1,0 +1,3 @@
+ARexx Version 1.15
+Copyright © 1987 by William S. Hawes
+All Rights Reserved

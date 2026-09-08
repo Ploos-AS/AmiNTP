@@ -1,0 +1,14 @@
+/opt/amiga/bin/m68k-amigaos-gcc -Iinclude -Os -Wall -Wextra -Werror -m68000 -mcrt=nix20 -c -o src/main.o src/main.c
+/opt/amiga/bin/m68k-amigaos-gcc -Iinclude -Os -Wall -Wextra -Werror -m68000 -mcrt=nix20 -c -o src/cli.o src/cli.c
+/opt/amiga/bin/m68k-amigaos-gcc -Iinclude -Os -Wall -Wextra -Werror -m68000 -mcrt=nix20 -c -o src/version.o src/version.c
+/opt/amiga/bin/m68k-amigaos-gcc -Iinclude -Os -Wall -Wextra -Werror -m68000 -mcrt=nix20 -c -o src/sntp.o src/sntp.c
+/opt/amiga/bin/m68k-amigaos-gcc -Iinclude -Os -Wall -Wextra -Werror -m68000 -mcrt=nix20 -c -o src/query.o src/query.c
+/opt/amiga/bin/m68k-amigaos-gcc -Iinclude -Os -Wall -Wextra -Werror -m68000 -mcrt=nix20 -c -o src/time.o src/time.c
+/opt/amiga/bin/m68k-amigaos-gcc -Iinclude -Os -Wall -Wextra -Werror -m68000 -mcrt=nix20 -c -o src/sync.o src/sync.c
+/opt/amiga/bin/m68k-amigaos-gcc -Iinclude -Os -Wall -Wextra -Werror -m68000 -mcrt=nix20 -c -o src/arexx_core.o src/arexx_core.c
+/opt/amiga/bin/m68k-amigaos-gcc -Iinclude -Os -Wall -Wextra -Werror -m68000 -mcrt=nix20 -c -o src/arexx_ops.o src/arexx_ops.c
+/opt/amiga/bin/m68k-amigaos-gcc -Iinclude -Os -Wall -Wextra -Werror -m68000 -mcrt=nix20 -c -o src/net_amiga.o src/net_amiga.c
+/opt/amiga/bin/m68k-amigaos-gcc -Iinclude -Os -Wall -Wextra -Werror -m68000 -mcrt=nix20 -c -o src/clock_amiga.o src/clock_amiga.c
+/opt/amiga/bin/m68k-amigaos-gcc -Iinclude -Os -Wall -Wextra -Werror -m68000 -mcrt=nix20 -c -o src/rtc_amiga.o src/rtc_amiga.c
+/opt/amiga/bin/m68k-amigaos-gcc -Iinclude -Os -Wall -Wextra -Werror -m68000 -mcrt=nix20 -c -o src/arexx_amiga.o src/arexx_amiga.c
+/opt/amiga/bin/m68k-amigaos-gcc -mcrt=nix20 -o AmiNTP src/main.o src/cli.o src/version.o src/sntp.o src/query.o src/time.o src/sync.o src/arexx_core.o src/arexx_ops.o src/net_amiga.o src/clock_amiga.o src/rtc_amiga.o src/arexx_amiga.o 

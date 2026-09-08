@@ -1,0 +1,8 @@
+chip_memory = 2048
+fast_memory = 8192
+hard_drive_1_read_only = 1
+set option "cpu_model" to "68020" (result: 1)
+set option "fpu_model" to "0" (result: 1)
+set option "filesystem2" to "rw,DH0:Qualification:/home/pgo/Projects/Ploos-AS/AmiNTP/build/m3.4/guest,10" (result: 1)
+set option "filesystem2" to "ro,DH1:Workbench:/home/pgo/Documents/FS-UAE/Hard Drives/Workbench,0" (result: 1)
+Known ROM 'KS ROM v3.1 (A1200)' loaded

@@ -1,0 +1,26 @@
+DH1:C/Assign C: DH1:C
+C:Assign Q: DH0:
+C:Assign SYS: DH1:
+C:Assign LIBS: DH1:Libs
+C:Assign DEVS: DH1:Devs
+C:Assign REXX: Q:
+C:Assign T: RAM:
+C:Path C: SYS:Rexxc SYS:System ADD
+C:FailAt 21
+C:Version >Q:os-version.txt
+C:Version exec.library >>Q:os-version.txt
+C:Version dos.library >>Q:os-version.txt
+C:Version rexxsyslib.library >>Q:os-version.txt
+Q:AmiNTP VERSION >Q:cli-version.txt
+C:Echo $RC >Q:cli-rc.txt
+SYS:System/RexxMast >Q:rexxmast.txt
+C:Wait 2
+SYS:Rexxc/RX Q:ports.rexx >Q:ports-before.txt
+C:Run >Q:run.txt C:Execute Q:resident
+C:Wait 2
+SYS:Rexxc/RX Q:ports.rexx >Q:ports-running.txt
+SYS:Rexxc/RX Q:m3.4-arexx.rexx >Q:arexx.txt
+C:Echo $RC >Q:harness-rc.txt
+C:Wait 2
+SYS:Rexxc/RX Q:ports.rexx >Q:ports-after.txt
+C:Echo DONE >Q:done.txt
