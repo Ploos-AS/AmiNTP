@@ -22,3 +22,5 @@ jobs:
         run: make m1.3-check
       - name: M2.1 time conversion
         run: make m2.1-check
+      - name: M2.2 system clock logic
+        run: make m2.2-check

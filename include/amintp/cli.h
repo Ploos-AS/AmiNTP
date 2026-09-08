@@ -7,6 +7,7 @@ struct amintp_options {
     unsigned timeout_seconds;
     unsigned retries;
     int query;
+    int sync;
     int show_help;
     int show_version;
 };

@@ -14,7 +14,6 @@ rc=$?
 set -e
 
 [ "$rc" -eq 5 ]
-printf '%s\n' "$out" | grep -q "SERVER=pool.ntp.org"
-printf '%s\n' "$out" | grep -q "not implemented in M0"
+printf '%s\n' "$out" | grep -q "specify QUERY or SYNC"
 
 echo "M0 host smoke: PASS"
