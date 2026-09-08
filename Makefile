@@ -89,7 +89,8 @@ m3.3a-check:
 	@grep -q '^kickstart_file = internal$$' ci/fs-uae/aros-smoke.fs-uae
 	@grep -q '^kickstart_file = internal$$' ci/fs-uae/aros-media.fs-uae
 	@grep -q '^floppy_drive_0 = @AROS_BOOT_ADF@$$' ci/fs-uae/aros-media.fs-uae
-	@grep -q 'AROS_DATE=20260907' ci/fs-uae/fetch-aros-boot.sh
+	@grep -q 'AROS_INDEX_URL=.*nightly2' ci/fs-uae/fetch-aros-boot.sh
+	@grep -q 'AROS_TARGET="amiga-m68k-boot-floppy"' ci/fs-uae/fetch-aros-boot.sh
 	@grep -q 'GATE=FS_UAE_AROS_BOOT_SMOKE' ci/fs-uae/run-aros-smoke.sh
 	@grep -q 'GATE=FS_UAE_AROS_BOOT_MEDIA' ci/fs-uae/run-aros-media-smoke.sh
 	@echo "M3.3a FS-UAE/AROS harness static checks: PASS"
