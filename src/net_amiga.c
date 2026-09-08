@@ -1,3 +1,7 @@
+#include <stddef.h>
+#include <stdint.h>
+#include <sys/types.h>
+
 #include <exec/types.h>
 #include <exec/libraries.h>
 #include <proto/exec.h>
