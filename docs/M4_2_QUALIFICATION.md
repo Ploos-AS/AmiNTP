@@ -18,6 +18,21 @@ cannot work. A future M4.2 attempt must use a big-box FS-UAE profile with a
 Zorro-II bus (and corresponding AmigaOS system configuration) before drawing
 driver or AmiTCP conclusions.
 
+### Valid big-box rerun
+
+This requirement was then met with FS-UAE `A4000`, CPU override `68020`, 2 MiB
+chip RAM and 8 MiB fast RAM, Kickstart 40.68 A4000 and the existing Workbench
+40.42 installation. FS-UAE again logged `A2065 Z2 Ethernet` with
+`network_card=a2065`, `a2065=slirp`, and `bsdsocket_library=0`. This is the
+valid-profile evidence below; the earlier A1200 results remain historical only.
+
+On the A4000 profile, Lance-Test still detected the malformed
+`00:FFFFFF80:10:32:33:34` address, passed buffer memory, and failed the LANCE
+configuration test. The official 2.14 driver still returned `IOERR_OPENFAIL`
+from the direct probe. Therefore the A1200 form factor was not the cause of the
+observed failure; the current FS-UAE A2065 emulation or its compatibility with
+these historical drivers remains the blocker.
+
 ## Revision, build and environment
 
 Starting HEAD for the prior report: `b7699d570be39fdf2c777d79628199925211bb77` (M4.1).
@@ -277,6 +292,7 @@ To repeat the probe after the native build, use a fresh output directory:
 
 ```sh
 python3 ci/local-amigaos/prepare-m4.2.py \
+  --machine A4000 --cpu 68020 \
   --workbench '/path/to/existing/Workbench' \
   --net '/path/to/existing/Net' --rom '/path/to/existing/a1200.rom' \
   --driver '/path/to/extracted/a2065.device' \

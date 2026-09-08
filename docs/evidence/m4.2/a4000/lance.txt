@@ -1,0 +1,7 @@
+Copyright 1990 Commodore-Amiga lance-test Tue Dec 04 18:53:20 1990
+Ethernet address of selected board is:  00:FFFFFF80:10:32:33:34
+
+	    Ethernet Controller Diagnostics
+
+		Buffer memory test.............. PASS
+		LANCE configuration test........ FAIL

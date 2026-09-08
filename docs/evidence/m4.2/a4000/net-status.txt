@@ -1,0 +1,4 @@
+Network status summary
+Local host address         = (Not configured)
+Default gateway address    = (Not configured)
+Domain name system servers = (Not configured)

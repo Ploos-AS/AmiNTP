@@ -12,6 +12,9 @@ p = argparse.ArgumentParser(description=__doc__)
 p.add_argument('--workbench', type=Path, required=True)
 p.add_argument('--net', type=Path, required=True)
 p.add_argument('--rom', type=Path, required=True)
+p.add_argument('--machine', default='A1200/020',
+               help='FS-UAE machine model, e.g. A4000')
+p.add_argument('--cpu', default='', help='optional FS-UAE CPU override')
 p.add_argument('--driver', type=Path, required=True,
                help='local extracted a2065.device; never copied into the repo')
 p.add_argument('--probe', type=Path,
@@ -55,10 +58,11 @@ if a.lance:
 (guest / 'env/AmiNTP/AmiNTP.conf').write_text(
     'SERVER=pool.ntp.org\nPORT=123\nTIMEOUT=5\nRETRIES=2\n')
 (out / 'qualification.fs-uae').write_text(f'''[fs-uae]
-amiga_model = A1200/020
+amiga_model = {a.machine}
 chip_memory = 2048
 fast_memory = 8192
 fpu = 0
+{("cpu = " + a.cpu) if a.cpu else ""}
 bsdsocket_library = 0
 network_card = a2065
 a2065 = slirp

@@ -1,0 +1,8 @@
+AmiTCP/IP release 3 bsdsocket.library 4.1 (AmiTCP_NG 4.1.5)
+
+No networking interfaces are available and configured.
+No point-to-point networking interfaces are available and configured.
+No broadcast networking interfaces are available and configured.
+No name resolution servers are configured.
+No routing information is configured.
+The default route is not configured.
