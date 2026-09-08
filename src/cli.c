@@ -1,17 +1,13 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "amintp/cli.h"
 
-static const char *server_value(const char *arg)
+static const char *value_after(const char *arg, const char *prefix)
 {
-    static const char prefix[] = "SERVER=";
-
-    if (strncmp(arg, prefix, sizeof(prefix) - 1) == 0) {
-        return arg + sizeof(prefix) - 1;
-    }
-
-    return 0;
+    size_t n = strlen(prefix);
+    return strncmp(arg, prefix, n) == 0 ? arg + n : 0;
 }
 
 int amintp_parse_cli(int argc, char **argv, struct amintp_options *options)
@@ -19,51 +15,47 @@ int amintp_parse_cli(int argc, char **argv, struct amintp_options *options)
     int i;
 
     options->server = 0;
+    options->port = 123;
+    options->timeout_seconds = 5;
+    options->retries = 2;
+    options->query = 0;
     options->show_help = 0;
     options->show_version = 0;
 
     for (i = 1; i < argc; ++i) {
-        const char *value;
+        const char *v;
 
-        if (strcmp(argv[i], "?") == 0 || strcmp(argv[i], "HELP") == 0 ||
-            strcmp(argv[i], "--help") == 0) {
+        if (!strcmp(argv[i], "?") || !strcmp(argv[i], "HELP") || !strcmp(argv[i], "--help")) {
             options->show_help = 1;
-            continue;
-        }
-
-        if (strcmp(argv[i], "VERSION") == 0 ||
-            strcmp(argv[i], "--version") == 0) {
+        } else if (!strcmp(argv[i], "VERSION") || !strcmp(argv[i], "--version")) {
             options->show_version = 1;
-            continue;
-        }
-
-        value = server_value(argv[i]);
-        if (value != 0 && value[0] != '\0') {
-            options->server = value;
-            continue;
-        }
-
-        if (options->server == 0 && argv[i][0] != '-') {
+        } else if (!strcmp(argv[i], "QUERY")) {
+            options->query = 1;
+        } else if ((v = value_after(argv[i], "SERVER=")) != 0 && *v) {
+            options->server = v;
+        } else if ((v = value_after(argv[i], "PORT=")) != 0 && *v) {
+            options->port = (unsigned short)strtoul(v, 0, 10);
+        } else if ((v = value_after(argv[i], "TIMEOUT=")) != 0 && *v) {
+            options->timeout_seconds = (unsigned)strtoul(v, 0, 10);
+        } else if ((v = value_after(argv[i], "RETRIES=")) != 0 && *v) {
+            options->retries = (unsigned)strtoul(v, 0, 10);
+        } else if (options->server == 0 && argv[i][0] != '-') {
             options->server = argv[i];
-            continue;
+        } else {
+            fprintf(stderr, "AmiNTP: unknown argument: %s\n", argv[i]);
+            return 20;
         }
-
-        fprintf(stderr, "AmiNTP: unknown argument: %s\n", argv[i]);
-        return 20;
     }
 
+    if (options->port == 0 || options->timeout_seconds == 0 || options->retries > 20) {
+        return 20;
+    }
     return 0;
 }
 
 void amintp_print_help(void)
 {
     puts("AmiNTP - minimal SNTP client for AmigaOS 2.04+");
-    puts("");
-    puts("Usage:");
-    puts("  AmiNTP SERVER");
-    puts("  AmiNTP SERVER=<host>");
-    puts("  AmiNTP HELP");
-    puts("  AmiNTP VERSION");
-    puts("");
-    puts("M0 note: SNTP network operations are not implemented yet.");
+    puts("Usage: AmiNTP SERVER=<host> QUERY [PORT=123] [TIMEOUT=5] [RETRIES=2]");
+    puts("       AmiNTP HELP | VERSION");
 }

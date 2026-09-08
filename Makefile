@@ -8,8 +8,9 @@ HOST_CC ?= cc
 HOST_CFLAGS ?= -O2 -Wall -Wextra -Werror
 
 TARGET := AmiNTP
-SOURCES := src/main.c src/cli.c src/version.c src/sntp.c
-OBJECTS := $(SOURCES:.c=.o)
+COMMON_SOURCES := src/main.c src/cli.c src/version.c src/sntp.c src/query.c
+AMIGA_SOURCES := $(COMMON_SOURCES) src/net_amiga.c
+OBJECTS := $(AMIGA_SOURCES:.c=.o)
 HOST_TARGET := build/host/AmiNTP
 M1_TEST := build/host/test_sntp
 
@@ -32,13 +33,15 @@ check:
 
 host-check:
 	@mkdir -p build/host
-	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(HOST_TARGET) $(SOURCES)
+	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(HOST_TARGET) $(COMMON_SOURCES) src/net_posix.c
 	@tests/m0_host_smoke.sh $(HOST_TARGET)
 
 m1-check:
 	@mkdir -p build/host
 	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(M1_TEST) tests/test_sntp.c src/sntp.c
 	@$(M1_TEST)
+	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(HOST_TARGET) $(COMMON_SOURCES) src/net_posix.c
+	@echo "M1.2 host compile: PASS"
 
 clean:
 	rm -f $(TARGET) $(OBJECTS)

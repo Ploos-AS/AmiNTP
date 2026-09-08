@@ -3,6 +3,10 @@
 
 struct amintp_options {
     const char *server;
+    unsigned short port;
+    unsigned timeout_seconds;
+    unsigned retries;
+    int query;
     int show_help;
     int show_version;
 };
