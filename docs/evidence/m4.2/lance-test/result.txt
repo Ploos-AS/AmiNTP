@@ -1,0 +1,7 @@
+SOURCE=https://aminet.net/driver/net/LanceTest.lha
+ARCHIVE_SHA256=b6e3fd1a49e39b2043197309ae42745a161ae50a140490318b52bf7bdd69fef3
+EXECUTABLE=Lance-Test 36.2 (04-Dec-1990)
+EXECUTABLE_SHA256=b45c11007ee491defc4867613a79c643438ddac8118c5bc1c70b9b50f2061d61
+COMMAND=Lance-Test diags
+RESULT=buffer PASS; LANCE configuration FAIL; malformed MAC; remaining tests watchdog
+FSUAE=3.2.35

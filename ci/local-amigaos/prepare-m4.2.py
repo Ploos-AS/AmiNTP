@@ -18,6 +18,10 @@ p.add_argument('--probe', type=Path,
                help='optional native SANA-II probe executable')
 p.add_argument('--probe-command', default='open',
                choices=('open', 'devicequery', 'station', 'config', 'online'))
+p.add_argument('--lance', type=Path,
+               help='optional Lance-Test executable, run before AmiTCP starts')
+p.add_argument('--probe-only', action='store_true',
+               help='stop after the optional diagnostic probe')
 p.add_argument('--ipv4', required=True, help='Current public NTP server IPv4 address')
 p.add_argument('--out', type=Path, required=True)
 a = p.parse_args()
@@ -42,6 +46,10 @@ if a.probe:
     if not a.probe.exists():
         p.error(f'Missing {a.probe}')
     shutil.copyfile(a.probe, guest / 'sana2-probe')
+if a.lance:
+    if not a.lance.exists():
+        p.error(f'Missing {a.lance}')
+    shutil.copyfile(a.lance, guest / 'Lance-Test')
 (guest / 'driver-sha256.txt').write_text(
     hashlib.sha256(a.driver.read_bytes()).hexdigest() + '  a2065.device\n')
 (guest / 'env/AmiNTP/AmiNTP.conf').write_text(
@@ -82,6 +90,15 @@ C:Assign AmiTCP: Net:AmiTCP
 C:Assign ENVARC: Q:env
 C:Path C: SYS:Rexxc SYS:System ADD
 C:FailAt 21
+C:If EXISTS Q:Lance-Test
+Q:Lance-Test diags >Q:lance.txt
+C:Echo $RC >Q:lance-rc.txt
+C:EndIf
+C:If EXISTS Q:sana2-probe
+C:Run >Q:probe-run.txt Q:sana2-probe {a.probe_command} >Q:probe-{a.probe_command}.txt
+C:Echo $RC >Q:probe-{a.probe_command}-rc.txt
+C:Wait 1
+C:EndIf
 C:Version >Q:os-version.txt
 C:Version exec.library >>Q:os-version.txt
 C:Version dos.library >>Q:os-version.txt
@@ -92,13 +109,10 @@ C:Echo $RC >Q:net-start-rc.txt
 C:Version bsdsocket.library FULL >Q:socket-open.txt
 C:ShowNetStatus >Q:net-status.txt
 C:netstat >Q:interfaces-routes.txt
-C:If EXISTS Q:sana2-probe
-C:Run >Q:probe-run.txt Q:sana2-probe {a.probe_command} >Q:probe-{a.probe_command}.txt
-C:Echo $RC >Q:probe-{a.probe_command}-rc.txt
-C:Wait 1
-C:EndIf
 C:Assign DEVS:Networks Q:Networks
-C:AddNetInterface Q:A2065 >Q:network-add.txt
+'''
+if not a.probe_only:
+    s += '''C:AddNetInterface Q:A2065 >Q:network-add.txt
 C:Echo $RC >Q:network-add-rc.txt
 C:ShowNetStatus >Q:network-status-after-add.txt
 C:netstat >Q:interfaces-routes-after-add.txt

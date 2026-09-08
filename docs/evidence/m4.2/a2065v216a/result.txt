@@ -1,0 +1,6 @@
+SOURCE=https://aminet.net/driver/net/a2065v216a.lha
+ARCHIVE_SHA256=f1805bfde98af6014394286500a9672c57e291a8280be5373836d2afd56f0462
+DRIVER_VER=$VER: a2065 2.16a (4.3.98)
+DRIVER_SHA256=f0727a46b5a82f95c7a2dbdcde60a66d043ab734e76670c77aa766b498cf7855
+RESULT=probe-only guest produced no probe output before watchdog; no OpenDevice result
+FSUAE=3.2.35

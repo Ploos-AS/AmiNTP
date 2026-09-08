@@ -101,6 +101,39 @@ watchdog; the same behavior occurred with and without `requiresinitdelay=yes`.
 Driver presence is proven, but device open/interface creation is not; no
 address, route, DNS, or UDP proof exists.
 
+### Lance-Test hardware diagnostic
+
+The Aminet `driver/net/LanceTest.lha` package was downloaded to `/tmp` only.
+Archive SHA-256 is
+`b6e3fd1a49e39b2043197309ae42745a161ae50a140490318b52bf7bdd69fef3`;
+the executable is Lance-Test 36.2 (04-Dec-1990), SHA-256
+`b45c11007ee491defc4867613a79c643438ddac8118c5bc1c70b9b50f2061d61`.
+Run before AmiTCP startup with `Lance-Test diags` produced:
+
+```text
+Ethernet address of selected board is:  00:FFFFFF80:10:32:33:34
+Buffer memory test.............. PASS
+LANCE configuration test........ FAIL
+```
+
+The remaining interrupt, collision, and internal-loopback tests did not run
+before the watchdog; the MAC output is also malformed. Thus the emulated board
+does not pass the vendor hardware diagnostic, independently confirming that
+this is an FS-UAE A2065/driver compatibility failure below AmiTCP.
+
+### Later driver comparison
+
+The Aminet `driver/net/a2065v216a.lha` package describes a later updated A2065
+driver based on 2.16. Archive SHA-256 is
+`f1805bfde98af6014394286500a9672c57e291a8280be5373836d2afd56f0462`;
+extracted `$VER: a2065 2.16a (4.3.98)` SHA-256 is
+`f0727a46b5a82f95c7a2dbdcde60a66d043ab734e76670c77aa766b498cf7855`.
+It was installed only in disposable storage. With this driver, a fresh
+probe-only profile produced no guest probe output before the watchdog and the
+emulator exited without normal guest completion; no OpenDevice or SANA-II result
+can be claimed. This is not success and is recorded separately from the 2.14
+`IOERR_OPENFAIL` result.
+
 ### Direct SANA-II isolation
 
 The exact disposable interface file passed to AddNetInterface was:
