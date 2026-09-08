@@ -82,3 +82,14 @@ Four independently compiled probes were produced with the same flags:
 The guest probe matrix and direct `Version`/`EXISTS` checks still require a
 completed disposable FS-UAE run; no result is promoted to PASS until BEFORE,
 output, RC, and AFTER are all captured for both socket settings.
+
+## One-executable watchdog matrix
+
+Fresh one-probe profiles were attempted with independent boots and markers
+outside stdout redirection. The disposable profiles did not produce even the
+`BEFORE` marker, RC, or AFTER marker, so these runs did not reach the probe
+invocation. This distinguishes the latest failure from the earlier
+`locale.library failed to load` observation: the current one-probe image has a
+boot/startup sequencing problem before process execution. No probe result is
+classified as a runtime PASS until the startup sequence itself is observed to
+run.
