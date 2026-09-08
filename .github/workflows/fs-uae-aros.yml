@@ -10,22 +10,25 @@ permissions:
   contents: read
 
 jobs:
-  aros-boot-smoke:
+  aros-runtime-gates:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install FS-UAE and Xvfb
+      - name: Install FS-UAE runtime tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y fs-uae xvfb
+          sudo apt-get install -y fs-uae xvfb curl lhasa
 
       - name: Validate M3.3a harness
         run: make m3.3a-check
 
-      - name: Boot FS-UAE with internal AROS Kickstart
+      - name: Gate 1 - internal AROS Kickstart smoke
         run: ci/fs-uae/run-aros-smoke.sh
+
+      - name: Gate 2 - pinned AROS boot-floppy smoke
+        run: ci/fs-uae/run-aros-media-smoke.sh
 
       - name: Upload FS-UAE qualification evidence
         if: always()

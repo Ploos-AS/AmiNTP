@@ -84,9 +84,14 @@ m3.2-check: m3.1-check
 
 m3.3a-check:
 	@bash -n ci/fs-uae/run-aros-smoke.sh
+	@bash -n ci/fs-uae/fetch-aros-boot.sh
+	@bash -n ci/fs-uae/run-aros-media-smoke.sh
 	@grep -q '^kickstart_file = internal$$' ci/fs-uae/aros-smoke.fs-uae
+	@grep -q '^kickstart_file = internal$$' ci/fs-uae/aros-media.fs-uae
+	@grep -q '^floppy_drive_0 = @AROS_BOOT_ADF@$$' ci/fs-uae/aros-media.fs-uae
+	@grep -q 'AROS_DATE=20260829' ci/fs-uae/fetch-aros-boot.sh
 	@grep -q 'GATE=FS_UAE_AROS_BOOT_SMOKE' ci/fs-uae/run-aros-smoke.sh
-	@grep -q 'STATUS=PASS' ci/fs-uae/run-aros-smoke.sh
+	@grep -q 'GATE=FS_UAE_AROS_BOOT_MEDIA' ci/fs-uae/run-aros-media-smoke.sh
 	@echo "M3.3a FS-UAE/AROS harness static checks: PASS"
 
 native-check:
