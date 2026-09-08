@@ -29,11 +29,15 @@ cp "$startup" "$startup.amintp-original"
 
 cat > "$startup" <<'EOF'
 SYS:C/Echo "M3_3C_GUEST_STARTED=1" >SYS:amintp-m3.3c-started.txt
+SYS:C/Which AmiNTP >SYS:amintp-m3.3c-which.txt
+SYS:C/Echo "M3_3C_BEFORE_AMINTP=1" >SYS:amintp-m3.3c-before.txt
 SYS:AmiNTP VERSION >SYS:amintp-m3.3c-version.txt
+SYS:C/Echo $RC >SYS:amintp-m3.3c-rc.txt
+SYS:C/Echo "M3_3C_AFTER_AMINTP=1" >SYS:amintp-m3.3c-after.txt
 SYS:C/Execute SYS:S/Startup-Sequence.amintp-original
 EOF
 
-rm -f "$aros_root/amintp-m3.3c-started.txt" "$aros_root/amintp-m3.3c-version.txt"
+rm -f "$aros_root"/amintp-m3.3c-{started,which,before,version,rc,after}.txt
 
 config="$OUT_DIR/aros-guest.fs-uae"
 sed "s|@AROS_ROOT@|$PWD/$aros_root|" ci/fs-uae/aros-guest.fs-uae > "$config"
@@ -46,12 +50,18 @@ set -e
 
 started="$aros_root/amintp-m3.3c-started.txt"
 version_out="$aros_root/amintp-m3.3c-version.txt"
+guest_rc="$aros_root/amintp-m3.3c-rc.txt"
+after="$aros_root/amintp-m3.3c-after.txt"
 status=FAIL
 observation=guest_result_missing
 
 if [[ -f "$started" && -f "$version_out" ]] && grep -q 'AmiNTP 0.3.2-m3.2' "$version_out"; then
   status=PASS
   observation=guest_executed_native_amintp_version
+elif [[ -f "$after" ]]; then
+  observation=guest_executed_amintp_but_version_mismatch
+elif [[ -f "$aros_root/amintp-m3.3c-before.txt" ]]; then
+  observation=guest_started_amintp_but_did_not_return
 fi
 
 {
@@ -62,6 +72,12 @@ fi
   echo "AROS_ROOT=$aros_root"
   echo "FS_UAE_EXIT=$rc"
   echo "OBSERVATION=$observation"
+  if [[ -f "$aros_root/amintp-m3.3c-which.txt" ]]; then
+    tr -d '\r' < "$aros_root/amintp-m3.3c-which.txt" | sed 's/^/GUEST_WHICH=/'
+  fi
+  if [[ -f "$guest_rc" ]]; then
+    tr -d '\r' < "$guest_rc" | sed 's/^/GUEST_RC=/'
+  fi
   if [[ -f "$version_out" ]]; then
     tr -d '\r' < "$version_out" | sed 's/^/GUEST_VERSION=/'
   fi
