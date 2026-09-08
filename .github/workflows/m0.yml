@@ -18,5 +18,5 @@ jobs:
         run: make check
       - name: Host compile and CLI smoke
         run: make host-check
-      - name: M1.1 SNTP wire tests
-        run: make m1-check
+      - name: M1 SNTP and query hardening tests
+        run: make m1.3-check

@@ -13,8 +13,9 @@ AMIGA_SOURCES := $(COMMON_SOURCES) src/net_amiga.c
 OBJECTS := $(AMIGA_SOURCES:.c=.o)
 HOST_TARGET := build/host/AmiNTP
 M1_TEST := build/host/test_sntp
+M13_TEST := build/host/test_query
 
-.PHONY: all clean check host-check m1-check
+.PHONY: all clean check host-check m1-check m1.3-check native-check
 
 all: $(TARGET)
 
@@ -42,6 +43,19 @@ m1-check:
 	@$(M1_TEST)
 	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(HOST_TARGET) $(COMMON_SOURCES) src/net_posix.c
 	@echo "M1.2 host compile: PASS"
+
+m1.3-check: m1-check
+	@mkdir -p build/host
+	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(M13_TEST) tests/test_query.c src/query.c src/sntp.c
+	@$(M13_TEST)
+	@echo "M1.3 hardening tests: PASS"
+
+native-check:
+	@command -v $(CC) >/dev/null 2>&1 || { echo "ERROR: $(CC) not found"; exit 1; }
+	$(MAKE) clean
+	$(MAKE) all
+	@file $(TARGET)
+	@echo "Native Bebbo build completed"
 
 clean:
 	rm -f $(TARGET) $(OBJECTS)
