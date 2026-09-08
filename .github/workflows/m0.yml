@@ -20,7 +20,11 @@ jobs:
         run: make host-check
       - name: M1 qualification
         run: make m1.3-check
-      - name: M2 qualification
+      - name: M2.1 time conversion
+        run: make m2.1-check
+      - name: M2.2 system clock logic
+        run: make m2.2-check
+      - name: M2.3 RTC logic
         run: make m2.3-check
-      - name: M3.1 ARexx foundation
-        run: make m3.1-check
+      - name: M3.2 ARexx commands
+        run: make m3.2-check

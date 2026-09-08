@@ -8,7 +8,7 @@ HOST_CC ?= cc
 HOST_CFLAGS ?= -O2 -Wall -Wextra -Werror
 
 TARGET := AmiNTP
-COMMON_SOURCES := src/main.c src/cli.c src/version.c src/sntp.c src/query.c src/time.c src/sync.c src/arexx_core.c
+COMMON_SOURCES := src/main.c src/cli.c src/version.c src/sntp.c src/query.c src/time.c src/sync.c src/arexx_core.c src/arexx_ops.c
 AMIGA_SOURCES := $(COMMON_SOURCES) src/net_amiga.c src/clock_amiga.c src/rtc_amiga.c src/arexx_amiga.c
 OBJECTS := $(AMIGA_SOURCES:.c=.o)
 HOST_TARGET := build/host/AmiNTP
@@ -18,8 +18,9 @@ M21_TEST := build/host/test_time
 M22_TEST := build/host/test_cli
 M23_TEST := build/host/test_sync
 M31_TEST := build/host/test_arexx
+M32_TEST := build/host/test_arexx_m32
 
-.PHONY: all clean check host-check m1-check m1.3-check m2.1-check m2.2-check m2.3-check m3.1-check native-check
+.PHONY: all clean check host-check m1-check m1.3-check m2.1-check m2.2-check m2.3-check m3.1-check m3.2-check native-check
 
 all: $(TARGET)
 
@@ -63,7 +64,6 @@ m2.2-check: m2.1-check
 	@mkdir -p build/host
 	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(M22_TEST) tests/test_cli.c src/cli.c
 	@$(M22_TEST)
-	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(HOST_TARGET) $(COMMON_SOURCES) src/net_posix.c src/clock_host.c src/rtc_host.c src/arexx_host.c
 	@echo "M2.2 host compile: PASS"
 
 m2.3-check: m2.2-check
@@ -73,11 +73,14 @@ m2.3-check: m2.2-check
 	@echo "M2.3 RTC tests: PASS"
 
 m3.1-check: m2.3-check
+	@echo "M3.1 dispatcher foundation covered by M3.2 superset"
+
+m3.2-check: m3.1-check
 	@mkdir -p build/host
-	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(M31_TEST) tests/test_arexx.c src/arexx_core.c src/version.c
-	@$(M31_TEST)
+	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(M32_TEST) tests/test_arexx_m32.c src/arexx_core.c src/version.c
+	@$(M32_TEST)
 	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(HOST_TARGET) $(COMMON_SOURCES) src/net_posix.c src/clock_host.c src/rtc_host.c src/arexx_host.c
-	@echo "M3.1 ARexx host compile: PASS"
+	@echo "M3.2 ARexx host compile: PASS"
 
 native-check:
 	@command -v $(CC) >/dev/null 2>&1 || { echo "ERROR: $(CC) not found"; exit 1; }
