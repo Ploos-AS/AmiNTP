@@ -9,8 +9,9 @@ mkdir -p "$OUT_DIR"
 docker pull "$IMAGE"
 docker image inspect "$IMAGE" --format '{{join .RepoDigests "\n"}}' | tee "$OUT_DIR/toolchain-image.txt"
 
-# The toolchain image intentionally contains the compiler, not a full host build
-# environment. Compile and link directly instead of assuming GNU make exists.
+# The project Makefile uses Bebbo's default native runtime for AmigaOS 2.x+.
+# Keep CI aligned with that contract; do not force libnix via -noixemul.
+# This still produces a native Amiga executable and does not require ixemul.library.
 docker run --rm \
   -v "$PWD:/work" \
   -w /work \
@@ -18,7 +19,6 @@ docker run --rm \
   m68k-amigaos-gcc \
     -Iinclude \
     -Os -Wall -Wextra -Werror -m68000 \
-    -noixemul \
     -o AmiNTP \
     src/main.c \
     src/cli.c \
