@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-IMAGE="${AMINTP_BEBBO_IMAGE:-amigadev/m68k-amigaos-gcc:latest}"
+IMAGE="${AMINTP_BEBBO_IMAGE:-amigadev/m68k-amigaos-gcc@sha256:b18080e6ffca8f793e0f539536a9138e9d2a548ca1a301c7483f43ee15fedfed}"
 OUT_DIR="${1:-build/fs-uae/native}"
 mkdir -p "$OUT_DIR"
 
