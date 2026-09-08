@@ -8,6 +8,7 @@ struct amintp_options {
     unsigned retries;
     int query;
     int sync;
+    int nortc;
     int show_help;
     int show_version;
 };
