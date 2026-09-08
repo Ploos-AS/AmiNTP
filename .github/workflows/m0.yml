@@ -1,4 +1,4 @@
-name: M0 qualification
+name: M0/M1 qualification
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  m0:
+  qualification:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,3 +18,5 @@ jobs:
         run: make check
       - name: Host compile and CLI smoke
         run: make host-check
+      - name: M1.1 SNTP wire tests
+        run: make m1-check

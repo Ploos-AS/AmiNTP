@@ -8,11 +8,12 @@ HOST_CC ?= cc
 HOST_CFLAGS ?= -O2 -Wall -Wextra -Werror
 
 TARGET := AmiNTP
-SOURCES := src/main.c src/cli.c src/version.c
+SOURCES := src/main.c src/cli.c src/version.c src/sntp.c
 OBJECTS := $(SOURCES:.c=.o)
 HOST_TARGET := build/host/AmiNTP
+M1_TEST := build/host/test_sntp
 
-.PHONY: all clean check host-check
+.PHONY: all clean check host-check m1-check
 
 all: $(TARGET)
 
@@ -33,6 +34,11 @@ host-check:
 	@mkdir -p build/host
 	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(HOST_TARGET) $(SOURCES)
 	@tests/m0_host_smoke.sh $(HOST_TARGET)
+
+m1-check:
+	@mkdir -p build/host
+	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(M1_TEST) tests/test_sntp.c src/sntp.c
+	@$(M1_TEST)
 
 clean:
 	rm -f $(TARGET) $(OBJECTS)
