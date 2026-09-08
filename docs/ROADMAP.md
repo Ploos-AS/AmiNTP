@@ -84,7 +84,12 @@ Qualification split:
 - startup examples
 - host/static regression and native-build integration
 
-### M4.2+ — TCP/IP stacks and runtime matrix
+### M4.2 qualification split
+
+- **M4.2a — FS-UAE `bsdsocket.library`: BLOCKED.** The disposable real-AmigaOS run reached the FS-UAE socket-library setup, but the native executable did not complete `VERSION` before the watchdog; no network PASS is claimed. If completed, this track would qualify only the FS-UAE socket API, DNS/UDP SNTP, clock sync, and ARexx behavior.
+- **M4.2b — AmiTCP_NG/SANA-II: BLOCKED.** The A2065/LANCE path remains blocked on FS-UAE and is tracked in `docs/M4_2_QUALIFICATION.md`. M4.2a does not qualify AmiTCP, Miami, Roadshow, SANA-II drivers, physical Ethernet, or real hardware.
+
+## M4.2+ — TCP/IP stacks and runtime matrix
 
 - AmiTCP qualification: [M4.2 local report](M4_2_QUALIFICATION.md) — BLOCKED;
   installed AmiTCP_NG opens but has no external interface, route or DNS;
