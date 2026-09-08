@@ -129,3 +129,22 @@ independent puts/DOS probes do not. The application also links formatted
 image. This is consistent with the observed `locale.library failed to load`,
 but no application change is justified: the guest cannot open the library at
 all. M4.2a remains blocked on the disposable AmigaOS locale installation.
+
+## Locale installation evidence
+
+The mounted Workbench contains `Libs/locale.library`, 18,072 bytes, modified
+6 July 1994, SHA-256
+`7a5e637728adebb7e14a2722d90dfb3739ac5abf6746a39931e0aa4f14ef327f`.
+Non-mutating strings inspection identifies `locale 40.4 (16.8.93)`.
+
+In a fresh guest boot, the absolute `DH0:` boot and `BEFORE_FILE` sentinels are
+written, but `Version DH1:Libs/locale.library FILE FULL` does not return: no
+version output, RC, or `AFTER_FILE` marker is produced. Thus the failure is
+below AmiNTP and even the AmigaDOS Version command’s library handling. The
+previous direct Probe D independently reported `LOCALE_OPEN_FAIL`.
+
+No alternate local Workbench 3.1 installation was found during this pass. The
+M3.4 evidence references the same Workbench path and FS-UAE profile, but the
+runtime locale artifact used then cannot be independently re-extracted from
+the committed evidence. M4.2a remains blocked pending a known-good complete
+locale installation or an equivalent verified AmigaOS environment.
