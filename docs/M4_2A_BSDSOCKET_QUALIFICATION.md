@@ -369,3 +369,16 @@ claimed. A standalone timer.device probe (`TR_GETSYSTIME`, UNIT_MICROHZ)
 passed, so the new time source itself is not the observed network blocker.
 DNS and further network tests are suspended pending independent confirmation of
 external UDP/123 availability through FS-UAE bsdsocket.
+
+## bsdsocket transport boundary
+
+Linux host UDP verification succeeded for `85.24.237.71:123`: 48-byte NTP
+reply, source `85.24.237.71:123`, version 3/mode 4, approximately 93 ms.
+
+A native guest socket probe under `bsdsocket_library=1` passed
+`OpenLibrary("bsdsocket.library",4)` three times in setup, but `socket(AF_INET,
+SOCK_DGRAM,0)` never returned. Two captured runs reached BOOT/LIBS/BEFORE,
+created E1_MAIN and OPEN_OK, then timed out without SOCKET_OK/RC/AFTER/DONE.
+This places the current M4.2a blocker at the FS-UAE bsdsocket `socket()` call,
+before DNS, sendto, WaitSelect, recvfrom, or AmiNTP protocol handling. No
+application networking change is justified.
