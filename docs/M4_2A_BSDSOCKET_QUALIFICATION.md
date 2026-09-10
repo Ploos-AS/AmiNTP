@@ -483,3 +483,26 @@ The requested emulator A/B could not be performed because no practical second
 FS-UAE build was available locally. Accordingly, no 3.2.35 regression range or
 fix commit is claimed. The independent canonical probes remain the observed
 runtime evidence: UDP and TCP socket calls hang, while OpenLibrary succeeds.
+
+## Explicit SocketBaseTagList initialization probe
+
+The installed NDK defines `SocketBaseTagList(struct TagItem *)` in
+`clib/bsdsocket_protos.h` and the inline implementation in
+`inline/bsdsocket.h` at LVO `-294`. `SBTC_ERRNOPTR(sizeof(LONG))` expands to
+the documented long-error-pointer code through `SBTM_SETVAL`; the TagItem list
+is terminated by `TAG_DONE`. The same headers define the varargs
+`SocketBaseTags()` wrapper, but that wrapper is unusable with this toolchain's
+missing `_sfdc_vararg` support.
+
+A standalone non-varargs probe was built with `-m68000 -mcrt=nix20`, SHA-256
+`cec7f29989af96b1badafa174bcac284162217066384ebd6cc3c28f93219b1d1`. Its
+disassembly contains `jsr a6@(-294)` for `SocketBaseTagList` and `jsr a6@(-30)`
+for `socket`, with no `_sfdc_vararg` dependency. Under FS-UAE 3.2.35 it reaches
+`OPEN_OK` and `BEFORE_TAGLIST`, then hangs inside `SocketBaseTagList`; no
+`AFTER_TAGLIST` marker appears. Therefore the TagList call itself is the first
+real bsdsocket dispatch that blocks. The initialization hypothesis is not
+confirmed as a remedy; the failure occurs before `inet_addr()` or `socket()`.
+
+This strengthens the classification to an unresolved FS-UAE/guest bsdsocket
+runtime dispatch blocker. AmiNTP networking code was not changed, and the
+numeric QUERY gate remains unstarted.
