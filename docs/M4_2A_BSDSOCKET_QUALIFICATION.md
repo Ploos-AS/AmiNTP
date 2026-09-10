@@ -591,3 +591,31 @@ The exact external v3.2.35 tree was built after the earlier bounded window ended
 A temporary external instrumentation patch added host `write_log()` markers to `bsdsocklib_SocketBaseTagList()` around `get_socketbase()`, each first `get_long()` TagItem read, and the return path. The instrumented binary was run with `log_bsdsocket=1`. FS-UAE logged emulated library creation and `OpenLibrary()`, but emitted none of the TagList markers before the guest watchdog expired. Thus the handler body was not observed to execute; the first missing transition is between the guest LVO call and entry into `bsdsocklib_SocketBaseTagList()`, rather than a demonstrated TagItem parsing or handler-return statement.
 
 The source-built baseline confirms the installed 3.2.35 result but does not yet identify the internal trap dispatch/guest resume defect. External source modifications remain outside this repository. M4.2a remains blocked and AmiNTP source is unchanged.
+
+## LVO/trap dispatch boundary
+
+In v3.2.35, `bsdlib_install()` builds `sockfuncvecs[]` from the ordered
+`sockfuncs[]` table. Each entry stores `here()`, emits `calltrap(deftrap2(...))`,
+and emits `RTS`. The function table then places Open/Close/Expunge at indices
+1..3 and the remaining entries at their corresponding negative LVOs. Thus
+`socket` is index 4/LVO `-30`, `inet_addr` is index 31, and
+`SocketBaseTagList` is index 48/LVO `-294`; both map to the named handlers in
+that table. `calltrap()` emits the UAE `0xA000 | trap_id` opcode, and the CPU
+recognizes that opcode in `newcpu.cpp` before calling `m68k_handle_trap()`.
+
+The instrumented external build added immediate logging to both
+`bsdsocklib_SocketBaseTagList()` and `m68k_handle_trap()`. With the explicit
+TagList probe, FS-UAE logged emulated library creation and OpenLibrary, but
+emitted neither `TRAP ENTER` nor `TAGLIST ENTER` before the watchdog. The
+runtime therefore does not reach generic trap dispatch, much less handler
+lookup or TagItem parsing. Runtime guest vector bytes, stub address, trap ID,
+and PC/A6 at the hang were not dumped; they remain UNVERIFIED. Source-level
+mapping is complete, but the first missing transition is the guest execution of
+the generated `0xA000|trap_id` stub between `jsr -294(a6)` and
+`m68k_handle_trap()`.
+
+The source also shows extended trap handling creates a trap context and uses
+`switch_to_trap_sem`/`switch_to_emu_sem`, but that path is downstream of the
+unobserved generic trap entry. No evidence justifies attributing the current
+hang to worker or TagItem logic. M4.2a remains blocked at the UAE trap-opcode
+recognition/dispatch boundary.
