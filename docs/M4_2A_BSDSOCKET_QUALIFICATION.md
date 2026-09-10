@@ -164,3 +164,24 @@ boot, so no claim is made for the assignment path. The evidence currently
 implicates the locale.library binary/runtime compatibility rather than the
 DH1 read-only directory mount. No proprietary files were added to the
 repository and no networking was attempted.
+
+## Absolute-path load boundary
+
+A low-level diagnostic using Exec/DOS APIs produced a decisive result from a
+fresh boot:
+
+```
+OpenLibrary("DH0:Libs/locale.library", 0)
+=> LOADSEG_OK, OPEN_OK, DONE, RC 0, AFTER
+```
+
+Thus the locale.library HUNK is loadable and initializes successfully when
+opened by absolute path. The failure is lookup/assignment related. A separate
+probe with `C:Assign LIBS: DH1:Libs` reaches a marker before the command but
+never reaches the marker after it; the Assign command itself stalls in this
+minimal boot. Consequently ordinary `OpenLibrary("locale.library",0)` and
+AmiNTP fail because the expected `LIBS:` search assignment is not established.
+No filesystem corruption or bsdsocket interaction is indicated.
+
+The absolute-path probe and the assignment-stall evidence are retained as
+qualification diagnostics; no application code was changed.
