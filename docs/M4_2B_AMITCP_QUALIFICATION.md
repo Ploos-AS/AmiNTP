@@ -32,5 +32,32 @@ valid A4000 evidence recorded malformed LANCE configuration and no usable
 device initialization. AmiTCP_NG qualification is therefore **BLOCKED** pending
 a working A2065 SANA-II device under this FS-UAE profile.
 
+## M4.2b.1 — A2065/SANA-II bring-up isolation
+
+The generated configuration is an A4000 with `network_card = a2065`,
+`a2065 = slirp`, and `bsdsocket_library = 0`; FS-UAE 3.2.35 logs the emulated
+`A2065 Z2 Ethernet` device. The guest interface file is:
+
+```text
+device=a2065.device
+unit=0
+configure=dhcp
+requiresinitdelay=no
+```
+
+The driver is installed as `DEVS:Networks/a2065.device` and is readable by the
+guest. The independent native SANA-II probe (SHA-256
+`95a68857d82b548af7d5d029765f3f71aa736044c92680f8c94a979a87ea28f8`) reaches
+`BEFORE_OPEN` and returns `OPENERR=4294967295` (`IOERR_OPENFAIL`) on the valid
+A4000 profile. It does not reach `S2_DEVICEQUERY`, station-address, configure,
+or online commands. This is an `OPENDEVICE_ERROR`, not a DHCP result.
+
+The AmiTCP_NG boot then reaches `BOOT_START` and `LIBS_READY`; synchronous
+`AddNetInterface eth0` does not return before the watchdog. Since the
+independent probe fails at `OpenDevice`, the first proven boundary is the
+A2065 driver/emulator compatibility layer (Outcome B in the isolation plan),
+below AmiTCP_NG and before SANA-II or DHCP traffic. No evidence justifies an
+AmiNTP or AmiTCP_NG protocol change.
+
 Only after the interface reaches an online state can socket, raw UDP, AmiNTP,
 SYNC NORTC, and ARexx network tests be qualified. M4.2a remains separate.
