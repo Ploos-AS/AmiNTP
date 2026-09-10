@@ -196,3 +196,18 @@ active `C:` causes the failure. The M4.2a harness now establishes `LIBS:` via
 the absolute Assign executable before issuing ordinary `C:` commands and no
 longer reassigns `C:`. This preserves the existing boot volume and does not
 modify Workbench files.
+
+## Corrected startup gate rerun
+
+With `DH1:C/Assign LIBS: DH1:Libs` as the first bootstrap assignment and no
+reassignment of `C:`, ordinary Probe D completes successfully in the corrected
+boot path (`OPEN_OK`, RC 0, AFTER/DONE). The same socket-independent startup
+path was used for the socket=1 gate.
+
+The current AmiNTP VERSION binary still reaches `BOOT_START`, `LIBS_READY`, and
+`BEFORE`, but its redirected output remains empty and no RC/AFTER/DONE marker is
+produced. Adding a `LOCALE:` assignment is itself an interactive/stalling
+operation, so it is not a valid correction. This leaves a narrower boundary:
+libnix initialization of the complete AmiNTP image (which contains formatted
+stdio/locale support) still fails even though a direct low-level locale
+OpenLibrary succeeds. Networking remains untested.
