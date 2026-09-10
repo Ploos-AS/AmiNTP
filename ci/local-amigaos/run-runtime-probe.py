@@ -40,7 +40,7 @@ seen = {}; status = 'TIMEOUT'
 try:
     while time.monotonic()-start < a.timeout:
         for f in output.iterdir():
-            if f.name not in seen and (f.name.startswith(('00_','10_','20_','30_','40_','99_','E1_'))): seen[f.name]=time.monotonic()-start
+            if f.name not in seen and not f.name.endswith('.uaem') and (f.name.startswith(('00_','10_','20_','30_','40_','99_','E1_'))): seen[f.name]=time.monotonic()-start
         if '99_DONE' in seen:
             status='PASS' if 'E1_MAIN' in seen and any(k.startswith('30_RC_0') for k in seen) else 'GUEST_FAIL'; break
         time.sleep(.1)

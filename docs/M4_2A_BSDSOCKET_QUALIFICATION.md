@@ -300,3 +300,19 @@ run directory, rejects reuse/stale markers, writes absolute DH0 marker files,
 records marker timing, owns one FS-UAE process group, polls only that run, and
 classifies completion as PASS, GUEST_FAIL, or TIMEOUT before terminating and
 reaping the owned process. The five-run E_BASE gate has not yet been executed.
+
+## Deterministic gate execution
+
+The new runner produced five isolated E_BASE runs, all PASS with the required
+markers and RC 0. Timing was stable: BOOT_START about 1.60–1.71 seconds,
+LIBS_READY/BEFORE about 1.70–1.81 seconds, E1_MAIN/RC/AFTER about
+1.80–1.91 seconds, and DONE about 1.90–2.01 seconds. No FS-UAE process remained
+after the runs.
+
+The complete-object E1 image (SHA-256
+`0f17765ea4900afe1a8f434502484953e0b530359b5c981115f884a1e1bd5fdc`) then
+failed deterministically in three isolated runs: each reached BOOT_START,
+LIBS_READY, and BEFORE, but no E1_MAIN/RC/AFTER/DONE appeared before timeout.
+The prior pre-main hypothesis is therefore reproduced under a stable harness;
+closure bisect is now justified. The runner was also corrected to ignore
+FS-UAE `.uaem` metadata sidecars when collecting authoritative markers.
