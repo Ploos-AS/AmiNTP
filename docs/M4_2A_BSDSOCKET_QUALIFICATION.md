@@ -185,3 +185,14 @@ No filesystem corruption or bsdsocket interaction is indicated.
 
 The absolute-path probe and the assignment-stall evidence are retained as
 qualification diagnostics; no application code was changed.
+
+## LIBS assignment boundary
+
+The isolated tests identify the startup defect. `DH1:C/Assign LIBS: DH1:Libs`
+returns RC 0 and permits ordinary `OpenLibrary("locale.library",0)` to return
+`OPEN_OK`, with AFTER/DONE markers. The earlier startup’s first command,
+`DH1:C/Assign C: DH1:C`, stalls before later markers; reassigning the already
+active `C:` causes the failure. The M4.2a harness now establishes `LIBS:` via
+the absolute Assign executable before issuing ordinary `C:` commands and no
+longer reassigns `C:`. This preserves the existing boot volume and does not
+modify Workbench files.

@@ -89,7 +89,7 @@ fullscreen = 0
 sound_output = 0
 automatic_input_grab = 0
 ''')
-s = f"""DH1:C/Assign C: DH1:C
+s = f"""DH1:C/Assign LIBS: DH1:Libs
 C:Assign Q: DH0:
 C:Assign SYS: DH1:
 C:Assign C: DH1:C
