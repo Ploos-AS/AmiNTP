@@ -506,3 +506,41 @@ confirmed as a remedy; the failure occurs before `inet_addr()` or `socket()`.
 This strengthens the classification to an unresolved FS-UAE/guest bsdsocket
 runtime dispatch blocker. AmiNTP networking code was not changed, and the
 numeric QUERY gate remains unstarted.
+
+## FS-UAE 3.2.35 source trace
+
+The exact installed baseline source is the official FS-UAE repository
+`https://github.com/FrodeSolheim/fs-uae`, tag `v3.2.35`, commit
+`4ae7ddaec50b567ed80d71ffbff067cb58e945a3`. The relevant implementation is
+in `src/bsdsocket.cpp` and `src/od-fs/bsdsocket_posix.cpp`.
+
+The guest vectors map as follows:
+
+* `SocketBaseTagList` LVO `-294` -> `bsdsocklib_SocketBaseTagList()`;
+* `inet_addr` -> `bsdsocklib_inet_addr()` -> `host_inet_addr()`;
+* `socket` LVO `-30` -> `bsdsocklib_socket()` -> `host_socket()`.
+
+`bsdsocklib_SocketBaseTagList()` first obtains the per-task base with
+`get_socketbase(context)`, then repeatedly reads guest TagItems with
+`get_long()`. `bsdsocklib_socket()` obtains the same per-task base and then
+calls the POSIX `host_socket()`, whose first host operation is the native
+`socket(af,type,protocol)` call. `host_inet_addr()` similarly converts the
+guest pointer and calls the native `inet_addr()` directly. This identifies the
+earliest shared path as the native trap/LVO dispatch and per-task-base access;
+the three calls diverge before their individual host semantics.
+
+The source's per-task state is allocated during `bsdsocklib_Open()` by
+`alloc_socketbase()`. That allocates a signal, descriptor tables, and invokes
+`host_sbinit()`, which creates a pipe, initializes a semaphore, and starts the
+`bsdsocket` worker thread. The observed host `strace` sample showed the
+FS-UAE process and its threads in futex waits, while no native host socket call
+appeared. No source-level evidence currently proves that the worker is the
+owner of the first `SocketBaseTagList`/`inet_addr` wait; an instrumented custom
+FS-UAE build was not produced in this run.
+
+The source configuration exposes bsdsocket through the compile-time
+`BSDSOCKET` feature (`configure.ac` `OPT_FEATURE([BSDSOCKET], ...)`). The
+installed binary's `ldd` output did not expose a separate libslirp dependency,
+and no hidden guest configuration requirement was identified from the source.
+The exact first missing transition therefore remains unresolved at the
+FS-UAE trap/dispatch boundary; no AmiNTP change is justified.
