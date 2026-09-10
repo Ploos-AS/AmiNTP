@@ -358,3 +358,14 @@ The corrected Q closure (SHA-256
 VERSION twice with `bsdsocket_library=0` and twice with `=1`, returning
 `AmiNTP 0.3.2-m3.2` and RC 0 each time. Host/static and hardened UDP
 regression passed. Networking qualification is the next required stage.
+
+## First network attempt
+
+After the native startup gate cleared, a numeric IPv4 query was attempted twice
+with `QUERY SERVER=85.24.237.71 TIMEOUT=3 RETRIES=1` under
+`bsdsocket_library=1`. The first run reached BOOT/LIBS/BEFORE but timed out
+without RC/AFTER/DONE; the run was classified TIMEOUT and no SNTP PASS is
+claimed. A standalone timer.device probe (`TR_GETSYSTIME`, UNIT_MICROHZ)
+passed, so the new time source itself is not the observed network blocker.
+DNS and further network tests are suspended pending independent confirmation of
+external UDP/123 availability through FS-UAE bsdsocket.
