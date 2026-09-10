@@ -253,3 +253,20 @@ Minimal linkable closures were generated: Q1 (query/SNTP/network), S1
 complete R1 run did not produce `E1_MAIN`, confirming that the ARexx dependency
 closure is a first concrete failing closure candidate. Exact archive-member and
 single-object attribution remains outstanding; no product code was changed.
+
+## Closure ladder follow-up
+
+The exact linkable ladder was rebuilt with the fixed E1 main and `-m68000
+-mcrt=nix20`:
+
+- Q: `diag_main.o cli.o config.o version.o query.o sntp.o net_amiga.o`
+- S: `diag_main.o cli.o config.o version.o sync.o clock_amiga.o rtc_amiga.o`
+- O: Q plus `arexx_ops.o`, sync closure, and `time.o`
+- C: O plus `arexx_core.o`
+- A: C plus `arexx_amiga.o`
+
+All five linked. The independent guest runs remain timing-sensitive under the
+local FS-UAE watchdog; the final O/C/A run did not produce `E1_MAIN`, so the
+ARexx/provider closure remains the first failing region. No archive-member delta
+or causal production symbol has yet been proven. No product code or networking
+was changed.
