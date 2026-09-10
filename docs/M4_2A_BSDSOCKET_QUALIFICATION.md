@@ -665,3 +665,16 @@ The current narrow classification is therefore **FS-UAE bsdsocket calltrap
 boundary unresolved**, with no AmiNTP source change and no demonstrated
 application defect. Further work requires CPU execution/PC instrumentation in
 the external emulator rather than additional guest API probes.
+
+## CPU execution tracing follow-up
+
+The explicit TagList probe was rerun against the self-built v3.2.35 emulator
+with `jit_compiler=0`. Temporary tracing was added to the A-line illegal-opcode
+path, generic trap entry, and the normal interpreter fetch/execute loop for
+`0x00F02100..0x00F02220`. The guest again reached `BEFORE_TAGLIST` and timed
+out; no CPU-range fetch, A-line, generic-trap, or handler marker was emitted.
+The runtime memory dump still shows `SocketBase-294 -> 0x00F021F0` and
+`A0 68 4E 75`. Therefore the first missing transition is narrowed only to CPU
+execution/fetch of the rtarea target (or an alternate execution engine path not
+covered by these hooks). Guest PC/A6 at watchdog and symbolic CPU-thread stack
+remain unverified. No AmiNTP source was changed; M4.2a remains blocked.
