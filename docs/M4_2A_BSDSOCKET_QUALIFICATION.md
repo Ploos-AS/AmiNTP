@@ -650,3 +650,18 @@ qualification is blocked pending an FS-UAE fix or a supported emulator build.
 A subsequent corrected dump avoided a probe-side pointer-arithmetic error in the earlier target inspection. The runtime SocketBase was `0x002192D4`, with `lib_NegSize = 0x12C` (300 bytes), `lib_PosSize = 0xB0`, version 4, revision 1. The `-294` vector bytes are `4E F9 00 F0 21 F0`, targeting `0x00F021F0`; that target contains `A0 68 4E 75` (trap ID `0x68`, RTS), not zeros. The earlier zero-filled-target conclusion is superseded and was caused by the diagnostic dump's incorrect pointer calculation.
 
 The source `sockfuncs[]` table contains 50 entries (indices 0..49), ending at `bsdsocklib_GetSocketEvents`; the negative library size is exactly 50 * 6. All sampled vector slots through the final table entry contain absolute JMP vectors to sequential generated stubs. Stub emission and vector-table sizing are therefore consistent at runtime; no cutoff or reservation overflow has been demonstrated. The calltrap/CPU dispatch boundary remains unresolved.
+
+## Self-built CPU A-line boundary follow-up
+
+The self-built v3.2.35 binary was rerun with JIT disabled (`jit_compiler=0`)
+and temporary external instrumentation in both `op_illg_1`/`op_illg` and
+`m68k_handle_trap()`. The explicit probe again reached `BEFORE_TAGLIST` and
+was terminated by the watchdog. No A-line trace, generic trap-entry trace, or
+TagList-handler trace was emitted. This is consistent with the valid runtime
+stub bytes recorded above, but does not prove whether the emulated CPU fails to
+fetch the rtarea target, dispatches through another CPU path, or blocks before
+`op_illg_1`; the exact guest PC and trap-return transition remain unobserved.
+The current narrow classification is therefore **FS-UAE bsdsocket calltrap
+boundary unresolved**, with no AmiNTP source change and no demonstrated
+application defect. Further work requires CPU execution/PC instrumentation in
+the external emulator rather than additional guest API probes.
