@@ -619,3 +619,28 @@ The source also shows extended trap handling creates a trap context and uses
 unobserved generic trap entry. No evidence justifies attributing the current
 hang to worker or TagItem logic. M4.2a remains blocked at the UAE trap-opcode
 recognition/dispatch boundary.
+
+## Runtime vector inspection
+
+A targeted guest dump after `OpenLibrary("bsdsocket.library",4)` recorded the
+returned base and negative vectors. The observed bytes were:
+
+```
+SocketBase-30:  4E F9 00 F0 21 40
+SocketBase-294: 4E F9 00 F0 21 F0
+```
+
+Both are absolute JMP vectors. The `-30` target (`00F02140`) contained
+`A0 3D 4E 75` (UAE calltrap opcode followed by RTS). The `-294` target
+(`00F021F0`) read as eight zero bytes, despite the source table registering
+`SocketBaseTagList` at index 48/LVO `-294` with a generated calltrap stub.
+Thus the runtime TagList vector points at a zero-filled/non-stub target rather
+than a valid A-line trap. This is direct guest-memory evidence of generated
+vector/stub corruption or incomplete installation. Runtime SocketBase was not
+persisted as a stable address artifact, and CPU PC/A6 capture was not required
+to establish the invalid target.
+
+The source-built and installed emulators both exhibited the pre-existing
+`BEFORE_TAGLIST` hang; no AmiNTP code was changed. The narrow classification is
+**BSDsocket generated calltrap stub/vector corruption at LVO -294**. Further
+qualification is blocked pending an FS-UAE fix or a supported emulator build.
