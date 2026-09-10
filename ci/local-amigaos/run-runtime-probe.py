@@ -13,6 +13,8 @@ p.add_argument('--machine', default='A1200/020')
 p.add_argument('--bsdsocket', action='store_true')
 p.add_argument('--timeout', type=float, default=120.0)
 p.add_argument('--run-id', required=True)
+p.add_argument('--no-e1-marker', action='store_true', help='classify by RC/DONE without E1_MAIN')
+p.add_argument('--args', default='', help='arguments passed to the guest executable')
 a = p.parse_args()
 if not a.executable.is_file(): p.error(f'missing executable: {a.executable}')
 run = (a.out_root / a.run_id).resolve(); guest = run / 'Qualification'; output = guest / 'output'
@@ -25,7 +27,7 @@ startup = f'''C:Echo BOOT_START >DH0:output/00_BOOT_START
 DH1:C/Assign LIBS: DH1:Libs
 C:Echo LIBS_READY >DH0:output/10_LIBS_READY
 C:Echo BEFORE >DH0:output/20_BEFORE
-DH0:{a.executable.name}
+DH0:{a.executable.name} {a.args} >DH0:output/program.txt
 C:Echo $RC >DH0:output/30_RC_$RC
 C:Echo AFTER >DH0:output/40_AFTER
 C:Echo DONE >DH0:output/99_DONE
@@ -42,7 +44,7 @@ try:
         for f in output.iterdir():
             if f.name not in seen and not f.name.endswith('.uaem') and (f.name.startswith(('00_','10_','20_','30_','40_','99_','E1_'))): seen[f.name]=time.monotonic()-start
         if '99_DONE' in seen:
-            status='PASS' if 'E1_MAIN' in seen and any(k.startswith('30_RC_0') for k in seen) else 'GUEST_FAIL'; break
+            status='PASS' if any(k.startswith('30_RC_0') for k in seen) and (a.no_e1_marker or 'E1_MAIN' in seen) else 'GUEST_FAIL'; break
         time.sleep(.1)
 finally:
     if proc.poll() is None:

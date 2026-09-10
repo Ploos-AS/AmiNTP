@@ -1,8 +1,9 @@
 #include <string.h>
-#include <sys/time.h>
+
 
 #include "amintp/net.h"
 #include "amintp/query.h"
+#include "amintp/time_source.h"
 
 int amintp_query_server(const char *server, unsigned short port,
                         unsigned timeout_seconds, unsigned retries,
@@ -13,16 +14,16 @@ int amintp_query_server(const char *server, unsigned short port,
     unsigned char response[AMINTP_NTP_PACKET_SIZE + 1];
     struct amintp_ntp_timestamp tx;
     size_t response_size = 0;
-    struct timeval now;
+    struct amintp_wallclock now;
     static struct amintp_ntp_timestamp previous;
     int rc;
 
-    if (gettimeofday(&now, 0) != 0) return 10;
+    if (amintp_time_now(&now) != 0) return 10;
     /* Correlation, not authentication: the server must echo this exact value.
      * Keep consecutive queries distinct even within one clock tick or after
      * a backwards system-clock adjustment. */
-    tx.seconds = (uint32_t)now.tv_sec + 2208988800UL;
-    tx.fraction = (uint32_t)(((uint64_t)now.tv_usec << 32) / 1000000UL);
+    tx.seconds = now.amiga_seconds + 2461449600UL;
+    tx.fraction = (uint32_t)(((uint64_t)now.microseconds << 32) / 1000000UL);
     if (tx.seconds < previous.seconds ||
         (tx.seconds == previous.seconds && tx.fraction <= previous.fraction)) {
         tx = previous;

@@ -338,3 +338,23 @@ out, reproducing the same pre-main boundary. This is the first primitive-level
 causal evidence. No production change was made; the next safe step is to
 replace or isolate the Amiga time-source implementation with host/static
 regression coverage before rerunning Q.
+
+## Native time-source fix
+
+`src/query.c` used POSIX `gettimeofday()` solely to create the per-query NTP
+transmit timestamp. A standalone `gettimeofday` probe reproduced the
+pre-main stall. The native path now uses `timer.device` UNIT_MICROHZ and
+`TR_GETSYSTIME` through `amintp_time_now()`; the host path retains
+`gettimeofday()` behind `time_source_host.c`. Amiga timer seconds are treated
+as Amiga epoch and converted explicitly with the existing NTP/Amiga epoch
+offset. Native nm scans contain no unresolved `gettimeofday`.
+
+The corrected Q closure (SHA-256
+`93b60c0353ebcec426034b6ace9c72061ba96580427c8ab842f577038326d9a7`) passed
+3/3 deterministic boots. Full-object diagnostic E1 (SHA-256
+`2332ffd9612fe9f25ec55ac7a0a99e3c25dcb4680c55d537bb19c99ebd52d364`) passed
+3/3. A fresh native AmiNTP build (SHA-256
+`1229b1ed7236d908f5581a7166be56ba19d3d0bd434cec5b6fb15d3c2cbfd8f9`) passed
+VERSION twice with `bsdsocket_library=0` and twice with `=1`, returning
+`AmiNTP 0.3.2-m3.2` and RC 0 each time. Host/static and hardened UDP
+regression passed. Networking qualification is the next required stage.

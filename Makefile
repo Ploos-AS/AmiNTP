@@ -9,7 +9,7 @@ HOST_CFLAGS ?= -O2 -Wall -Wextra -Werror
 
 TARGET := AmiNTP
 COMMON_SOURCES := src/main.c src/cli.c src/config.c src/version.c src/sntp.c src/query.c src/time.c src/sync.c src/arexx_core.c src/arexx_ops.c
-AMIGA_SOURCES := $(COMMON_SOURCES) src/net_amiga.c src/clock_amiga.c src/rtc_amiga.c src/arexx_amiga.c
+AMIGA_SOURCES := $(COMMON_SOURCES) src/net_amiga.c src/clock_amiga.c src/rtc_amiga.c src/arexx_amiga.c src/time_source_amiga.c
 OBJECTS := $(AMIGA_SOURCES:.c=.o)
 HOST_TARGET := build/host/AmiNTP
 M1_TEST := build/host/test_sntp
@@ -40,19 +40,19 @@ check:
 
 host-check:
 	@mkdir -p build/host
-	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(HOST_TARGET) $(COMMON_SOURCES) src/net_posix.c src/clock_host.c src/rtc_host.c src/arexx_host.c
+	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(HOST_TARGET) $(COMMON_SOURCES) src/net_posix.c src/clock_host.c src/rtc_host.c src/arexx_host.c src/time_source_host.c
 	@tests/m0_host_smoke.sh $(HOST_TARGET)
 
 m1-check:
 	@mkdir -p build/host
 	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(M1_TEST) tests/test_sntp.c src/sntp.c
 	@$(M1_TEST)
-	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(HOST_TARGET) $(COMMON_SOURCES) src/net_posix.c src/clock_host.c src/rtc_host.c src/arexx_host.c
+	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(HOST_TARGET) $(COMMON_SOURCES) src/net_posix.c src/clock_host.c src/rtc_host.c src/arexx_host.c src/time_source_host.c
 	@echo "M1.2 host compile: PASS"
 
 m1.3-check: m1-check
 	@mkdir -p build/host
-	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(M13_TEST) tests/test_query.c src/query.c src/sntp.c
+	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(M13_TEST) tests/test_query.c src/query.c src/sntp.c src/time_source_host.c
 	@$(M13_TEST)
 	@echo "M1.3 hardening tests: PASS"
 
@@ -80,7 +80,7 @@ m3.2-check: m3.1-check
 	@mkdir -p build/host
 	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(M32_TEST) tests/test_arexx_m32.c src/arexx_core.c src/version.c
 	@$(M32_TEST)
-	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(HOST_TARGET) $(COMMON_SOURCES) src/net_posix.c src/clock_host.c src/rtc_host.c src/arexx_host.c
+	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(HOST_TARGET) $(COMMON_SOURCES) src/net_posix.c src/clock_host.c src/rtc_host.c src/arexx_host.c src/time_source_host.c
 	@echo "M3.2 ARexx host compile: PASS"
 
 m3.3a-check:
