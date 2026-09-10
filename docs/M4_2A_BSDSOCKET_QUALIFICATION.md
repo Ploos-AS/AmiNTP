@@ -221,3 +221,19 @@ return. This proves the corrected boot and `LIBS:` setup are working and narrows
 the remaining failure to the additional runtime-linked object set; it is not a
 bsdsocket initialization issue. A complete object-by-object bisect remains
 necessary before any product change. No diagnostic binaries were committed.
+
+## Pre-main object bisect
+
+From the fixed baseline (`diag_main.o + cli.o + config.o + version.o`), the
+single-object link matrix showed:
+
+- `sntp.o`, `time.o`, `net_amiga.o`, `clock_amiga.o`, and `rtc_amiga.o` link
+  successfully and their minimal diagnostic images reached `E1_MAIN`.
+- `query.o`, `sync.o`, `arexx_core.o`, `arexx_ops.o`, and `arexx_amiga.o` do not
+  link alone because their expected inter-object dependencies are unresolved.
+- The complete object set still fails before `E1_MAIN`.
+
+This establishes that the failure is an interaction in the larger dependency
+closure, rather than any one of the independently linkable objects. A complete
+closure bisect and archive-member attribution remain outstanding; no product
+code was changed and networking was not attempted.
