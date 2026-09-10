@@ -544,3 +544,42 @@ installed binary's `ldd` output did not expose a separate libslirp dependency,
 and no hidden guest configuration requirement was identified from the source.
 The exact first missing transition therefore remains unresolved at the
 FS-UAE trap/dispatch boundary; no AmiNTP change is justified.
+
+## Exact FS-UAE 3.2.35 source trace
+
+The external source tree is checked out at official tag `v3.2.35`, commit
+`4ae7ddaec50b567ed80d71ffbff067cb58e945a3`. Bootstrap and configure completed
+with the default Linux feature set and `BSDSOCKET=1`. A self-built binary was
+not completed within this run (the build was still compiling when the bounded
+build window ended), so installed-versus-self-built runtime equivalence is
+UNVERIFIED.
+
+Source inspection gives the concrete dispatch path:
+
+```
+LVO -294 -> bsdsocklib_SocketBaseTagList()
+             -> get_socketbase(context)
+             -> get_long() over guest TagItems
+
+LVO -30  -> bsdsocklib_socket()
+             -> get_socketbase(context)
+             -> host_socket()
+             -> native socket()
+
+inet_addr -> bsdsocklib_inet_addr()
+             -> host_inet_addr()
+             -> native inet_addr()
+```
+
+`alloc_socketbase()` is called from `bsdsocklib_Open()`. It allocates the
+per-task state, obtains an Exec signal, initializes descriptor tables, and
+calls POSIX `host_sbinit()`. `host_sbinit()` creates the abort pipe,
+initializes the semaphore, and starts the `bsdsocket` worker thread. Thus the
+worker setup is expected to occur during OpenLibrary, before the first vector.
+
+The guest trace reaches `OPEN_OK` and `BEFORE_TAGLIST`, but no return marker.
+No temporary FS-UAE instrumentation build was produced, so the exact internal
+statement, worker request, or trap-return transition remains unobserved. The
+earliest source-level common boundary supported by both code and runtime
+evidence is entry into `bsdsocklib_SocketBaseTagList()` and its initial
+`get_socketbase()`/guest-memory path. No new guest probe was added.
