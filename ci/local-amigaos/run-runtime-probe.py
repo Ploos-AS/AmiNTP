@@ -15,12 +15,14 @@ p.add_argument('--timeout', type=float, default=120.0)
 p.add_argument('--run-id', required=True)
 p.add_argument('--no-e1-marker', action='store_true', help='classify by RC/DONE without E1_MAIN')
 p.add_argument('--system-assigns', action='store_true', help='use the M3.4-style Workbench system assigns')
+p.add_argument('--isolated-libs', action='store_true', help='use an empty qualification LIBS: assign')
 p.add_argument('--args', default='', help='arguments passed to the guest executable')
 a = p.parse_args()
 if not a.executable.is_file(): p.error(f'missing executable: {a.executable}')
 run = (a.out_root / a.run_id).resolve(); guest = run / 'Qualification'; output = guest / 'output'
 if run.exists(): p.error(f'run directory already exists: {run}')
 (output).mkdir(parents=True); (guest/'S').mkdir()
+if a.isolated_libs: (guest/'Libs').mkdir()
 shutil.copyfile(a.executable, guest/a.executable.name)
 for f in output.iterdir():
     if f.name.startswith(('00_','10_','20_','30_','40_','99_','E1_')): p.error('stale marker')
@@ -38,7 +40,7 @@ DH1:C/Path C: SYS:Rexxc SYS:System ADD
 DH1:C/Stack 8192
 """
 else:
-    assigns = 'DH1:C/Assign LIBS: DH1:Libs\n'
+    assigns = ('DH1:C/Assign LIBS: DH0:Libs\n' if a.isolated_libs else 'DH1:C/Assign LIBS: DH1:Libs\n')
 startup = f'''C:Echo BOOT_START >DH0:output/00_BOOT_START
 {assigns}'''
 startup += f'''C:Echo LIBS_READY >DH0:output/10_LIBS_READY
@@ -49,7 +51,7 @@ C:Echo AFTER >DH0:output/40_AFTER
 C:Echo DONE >DH0:output/99_DONE
 '''
 (guest/'S/Startup-Sequence').write_text(startup)
-conf = f'''[fs-uae]\namiga_model = {a.machine}\nchip_memory = 2048\nfast_memory = 8192\nbsdsocket_library = {1 if a.bsdsocket else 0}\nkickstart_file = {a.rom.resolve()}\nhard_drive_0 = {guest}\nhard_drive_0_label = Qualification\nhard_drive_0_priority = 10\nhard_drive_1 = {a.workbench.resolve()}\nhard_drive_1_label = Workbench\nhard_drive_1_read_only = 1\nhard_drive_1_priority = 0\nbase_dir = {run/'fs-uae'}\nlogs_dir = {run/'logs'}\nfullscreen = 0\nsound_output = 0\nautomatic_input_grab = 0\n'''
+conf = f'''[fs-uae]\namiga_model = {a.machine}\nchip_memory = 2048\nfast_memory = 8192\nbsdsocket_library = {1 if a.bsdsocket else 0}\nlog_bsdsocket = 1\nkickstart_file = {a.rom.resolve()}\nhard_drive_0 = {guest}\nhard_drive_0_label = Qualification\nhard_drive_0_priority = 10\nhard_drive_1 = {a.workbench.resolve()}\nhard_drive_1_label = Workbench\nhard_drive_1_read_only = 1\nhard_drive_1_priority = 0\nbase_dir = {run/'fs-uae'}\nlogs_dir = {run/'logs'}\nfullscreen = 0\nsound_output = 0\nautomatic_input_grab = 0\n'''
 (run/'fs-uae.conf').write_text(conf)
 start = time.monotonic(); log = (run/'emulator.log').open('w')
 proc = subprocess.Popen(['fs-uae', str(run/'fs-uae.conf')], stdout=log, stderr=subprocess.STDOUT, start_new_session=True)

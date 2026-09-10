@@ -583,3 +583,11 @@ statement, worker request, or trap-return transition remains unobserved. The
 earliest source-level common boundary supported by both code and runtime
 evidence is entry into `bsdsocklib_SocketBaseTagList()` and its initial
 `get_socketbase()`/guest-memory path. No new guest probe was added.
+
+## Self-built 3.2.35 and dispatch instrumentation
+
+The exact external v3.2.35 tree was built after the earlier bounded window ended during the final link step. The resulting source-built emulator was run with the same guest, ROM, configuration, and explicit TagList probe; it reproduced the installed behavior: `OPEN_OK` followed by a timeout at `BEFORE_TAGLIST`.
+
+A temporary external instrumentation patch added host `write_log()` markers to `bsdsocklib_SocketBaseTagList()` around `get_socketbase()`, each first `get_long()` TagItem read, and the return path. The instrumented binary was run with `log_bsdsocket=1`. FS-UAE logged emulated library creation and `OpenLibrary()`, but emitted none of the TagList markers before the guest watchdog expired. Thus the handler body was not observed to execute; the first missing transition is between the guest LVO call and entry into `bsdsocklib_SocketBaseTagList()`, rather than a demonstrated TagItem parsing or handler-return statement.
+
+The source-built baseline confirms the installed 3.2.35 result but does not yet identify the internal trap dispatch/guest resume defect. External source modifications remain outside this repository. M4.2a remains blocked and AmiNTP source is unchanged.
