@@ -62,6 +62,29 @@ AmiNTP or AmiTCP_NG protocol change.
 Only after the interface reaches an online state can socket, raw UDP, AmiNTP,
 SYNC NORTC, and ARexx network tests be qualified. M4.2a remains separate.
 
+## M4.2b.3 — Amiberry upstream-parity attempt
+
+The upstream-pinned container was built locally from
+`docker/Dockerfile.amiberry`. It pins Amiberry v7.1.1 at source commit
+`c53d6db770a5580732a7f2bb48abcbfcd95fd0f4`; the resulting local image digest
+is `sha256:8b857755cf45b2fc47421c3882493a72ab1ef4040a210fc5fededb5768b50fe5`.
+The run used `NET=1`, A4000, CPU 68020, A2065 SLIRP, and the emulator's own
+network implementation (no FS-UAE bsdsocket shortcut).
+
+The disposable run used the locally owned A4000 Kickstart 40.68 image and the
+local Workbench tree with the 2.16a driver staged at
+`DEVS:Networks/a2065.device`. A deterministic startup was installed in the
+disposable copy to write boot markers, run static `AddNetInterface`, and write
+status output. The guest produced no boot marker before the 90-second watchdog
+in either the stock or explicit-startup run. Consequently A2065 enumeration,
+OpenDevice, SANA-II, and AmiTCP_NG interface state were not observed in this
+attempt. This does not contradict upstream: its harness requires an installed
+AmigaOS 3.2 Workbench tree and its own prepared test files, while the local
+input here is Workbench 3.1/40.42.
+
+The Amiberry path is now prepared and buildable, but M4.2b remains **BLOCKED**
+at guest boot/input parity. No AmiNTP or AmiTCP_NG networking code was changed.
+
 ## Upstream parity correction
 
 AmiTCP_NG's documented successful A2065 qualification uses **Amiberry v7.1.1
