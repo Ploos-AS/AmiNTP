@@ -404,3 +404,30 @@ M4.2a network matrix remains BLOCKED at the independent FS-UAE socket boundary;
 DNS, SNTP, configuration, clock sync, and ARexx network tests remain
 UNVERIFIED. Amiberry results remain supplemental and are not used as the
 FS-UAE release gate.
+
+## Socket ABI isolation
+
+A fresh standalone probe (`socket_diag`, SHA-256
+`00f07bce466dea25193ab3691bbcdc14802c9c213aba7d91747bbac6556f88fe`) was
+compiled with Bebbo GCC `-m68000 -mcrt=nix20`. It uses the canonical NDK
+`proto/bsdsocket.h` inline interface with
+`BSDSOCKET_BASE_NAME AmiNTPSocketBase`, and defines that library base exactly
+as the inline stubs require. Disassembly shows the expected Amiga library call:
+the domain/type/protocol are placed in D0/D1/D2 and the call is `jsr a6@(-30)`.
+
+The probe creates and closes marker files around every operation. With
+`bsdsocket_library=1`, it consistently reaches `OPEN_OK` and
+`BEFORE_SOCKET`, then hangs inside `socket(AF_INET, SOCK_DGRAM, 0)`; no
+`SOCKET_OK`, close, or completion marker appears before the watchdog. A TCP
+variant (SHA-256
+`68ceb94e15204546f0147c8ec53f2564ec6a9f3ccb08b2dc9386f32858f85544`) hangs at
+the same boundary. The same UDP probe with `bsdsocket_library=0` also opens the
+guest `bsdsocket.library` and hangs at the first socket call, so the guest
+library path itself is not a normal open failure in this Workbench tree.
+
+This is independent of AmiNTP and does not indicate an application ABI defect.
+The result is currently classified as **still unresolved**, with the narrowest
+observed boundary being the FS-UAE-provided bsdsocket socket implementation
+after a correct canonical library-vector call. No runtime initialization call
+has been added; the installed NDK pattern provided no demonstrated requirement
+for an extra pre-socket initialization step.
