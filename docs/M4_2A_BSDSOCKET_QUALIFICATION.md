@@ -148,3 +148,19 @@ M3.4 evidence references the same Workbench path and FS-UAE profile, but the
 runtime locale artifact used then cannot be independently re-extracted from
 the committed evidence. M4.2a remains blocked pending a known-good complete
 locale installation or an equivalent verified AmigaOS environment.
+
+## DH0 versus DH1 locale source test
+
+An ignored disposable DH0 copy was made with identical SHA-256
+`7a5e637728adebb7e14a2722d90dfb3739ac5abf6746a39931e0aa4f14ef327f` and size
+18,072 bytes. `Version DH0:Libs/locale.library FILE FULL` stalled after its
+absolute `BEFORE` marker just like the earlier DH1 command; no output, RC, or
+AFTER marker was produced. Therefore moving the identical bytes from the
+read-only Workbench directory to the writable qualification directory does
+not resolve the failure.
+
+A subsequent `LIBS: DH0:Libs` Probe D attempt did not reach its marker in that
+boot, so no claim is made for the assignment path. The evidence currently
+implicates the locale.library binary/runtime compatibility rather than the
+DH1 read-only directory mount. No proprietary files were added to the
+repository and no networking was attempted.
