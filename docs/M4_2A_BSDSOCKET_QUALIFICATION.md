@@ -211,3 +211,13 @@ operation, so it is not a valid correction. This leaves a narrower boundary:
 libnix initialization of the complete AmiNTP image (which contains formatted
 stdio/locale support) still fails even though a direct low-level locale
 OpenLibrary succeeds. Networking remains untested.
+
+## Full-object startup isolation
+
+A temporary minimal-main image linked against the complete AmiNTP object set
+stalls before its low-level `E1_MAIN` marker, while reduced images containing
+`cli.o + version.o` and `cli.o + config.o + version.o` reach `E1_MAIN` and
+return. This proves the corrected boot and `LIBS:` setup are working and narrows
+the remaining failure to the additional runtime-linked object set; it is not a
+bsdsocket initialization issue. A complete object-by-object bisect remains
+necessary before any product change. No diagnostic binaries were committed.
