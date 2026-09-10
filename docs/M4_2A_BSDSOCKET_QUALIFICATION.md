@@ -644,3 +644,9 @@ The source-built and installed emulators both exhibited the pre-existing
 `BEFORE_TAGLIST` hang; no AmiNTP code was changed. The narrow classification is
 **BSDsocket generated calltrap stub/vector corruption at LVO -294**. Further
 qualification is blocked pending an FS-UAE fix or a supported emulator build.
+
+## Corrected complete vector dump
+
+A subsequent corrected dump avoided a probe-side pointer-arithmetic error in the earlier target inspection. The runtime SocketBase was `0x002192D4`, with `lib_NegSize = 0x12C` (300 bytes), `lib_PosSize = 0xB0`, version 4, revision 1. The `-294` vector bytes are `4E F9 00 F0 21 F0`, targeting `0x00F021F0`; that target contains `A0 68 4E 75` (trap ID `0x68`, RTS), not zeros. The earlier zero-filled-target conclusion is superseded and was caused by the diagnostic dump's incorrect pointer calculation.
+
+The source `sockfuncs[]` table contains 50 entries (indices 0..49), ending at `bsdsocklib_GetSocketEvents`; the negative library size is exactly 50 * 6. All sampled vector slots through the final table entry contain absolute JMP vectors to sequential generated stubs. Stub emission and vector-table sizing are therefore consistent at runtime; no cutoff or reservation overflow has been demonstrated. The calltrap/CPU dispatch boundary remains unresolved.
