@@ -279,3 +279,16 @@ known startup race and explains the unstable sequential closure results. The
 harness has now removed the redundant C reassignment (and the stalling LOCALE
 assignment); diagnostics must use one unique run directory and absolute DH0
 sentinels before closure attribution resumes.
+
+## Repeatability gate status
+
+The corrected generator now emits `DH1:C/Assign LIBS: DH1:Libs` as its first
+bootstrap command and contains no `Assign C:` or `Assign LOCALE:` command. The
+AmiNTP command itself is synchronous; the only remaining `C:Run` is the later
+resident/ARexx portion of the full harness and is not suitable for E1 timing
+measurements.
+
+The required five-run E_BASE and three-run full-E1 repeatability gates have not
+yet been completed with unique per-run directories and PID-based FS-UAE
+lifecycle management. Therefore all prior closure observations remain
+superseded/inconclusive and no object boundary or archive analysis is claimed.
