@@ -237,3 +237,19 @@ This establishes that the failure is an interaction in the larger dependency
 closure, rather than any one of the independently linkable objects. A complete
 closure bisect and archive-member attribution remain outstanding; no product
 code was changed and networking was not attempted.
+
+## Dependency-closure bisect
+
+Project dependency extraction produced:
+
+- `query.o` -> `sntp.o`, `net_amiga.o`
+- `sync.o` -> `clock_amiga.o`, `rtc_amiga.o`
+- `arexx_core.o` -> `arexx_ops.o`
+- `arexx_ops.o` -> `query.o`, `sync.o`, `time.o`
+- `arexx_amiga.o` -> `arexx_core.o`
+
+Minimal linkable closures were generated: Q1 (query/SNTP/network), S1
+(sync/clock/RTC), and R1 (ARexx core/ops plus query/sync providers). The
+complete R1 run did not produce `E1_MAIN`, confirming that the ARexx dependency
+closure is a first concrete failing closure candidate. Exact archive-member and
+single-object attribution remains outstanding; no product code was changed.
