@@ -316,3 +316,12 @@ LIBS_READY, and BEFORE, but no E1_MAIN/RC/AFTER/DONE appeared before timeout.
 The prior pre-main hypothesis is therefore reproduced under a stable harness;
 closure bisect is now justified. The runner was also corrected to ignore
 FS-UAE `.uaem` metadata sidecars when collecting authoritative markers.
+
+## Deterministic provider closure result
+
+Using the authoritative runner, the minimal QUERY closure (`E_BASE + query.o +
+sntp.o + net_amiga.o`) failed deterministically in three fresh boots. Each
+run reached `00_BOOT_START`, `10_LIBS_READY`, and `20_BEFORE`, then timed out
+without `E1_MAIN`, RC, AFTER, or DONE. This is the first stable provider
+closure failure; ARexx O/C/A attribution is therefore superseded. Further
+closure and linker-delta work must begin by minimizing the QUERY closure.
