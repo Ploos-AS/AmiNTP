@@ -14,6 +14,7 @@ p.add_argument('--bsdsocket', action='store_true')
 p.add_argument('--timeout', type=float, default=120.0)
 p.add_argument('--run-id', required=True)
 p.add_argument('--no-e1-marker', action='store_true', help='classify by RC/DONE without E1_MAIN')
+p.add_argument('--system-assigns', action='store_true', help='use the M3.4-style Workbench system assigns')
 p.add_argument('--args', default='', help='arguments passed to the guest executable')
 a = p.parse_args()
 if not a.executable.is_file(): p.error(f'missing executable: {a.executable}')
@@ -23,9 +24,24 @@ if run.exists(): p.error(f'run directory already exists: {run}')
 shutil.copyfile(a.executable, guest/a.executable.name)
 for f in output.iterdir():
     if f.name.startswith(('00_','10_','20_','30_','40_','99_','E1_')): p.error('stale marker')
+assigns = ""
+if a.system_assigns:
+    assigns = """DH1:C/Assign SYS: DH1:
+DH1:C/Assign LIBS: SYS:Libs
+DH1:C/Assign DEVS: SYS:Devs
+DH1:C/Assign L: SYS:L
+DH1:C/Assign FONTS: SYS:Fonts
+DH1:C/Assign S: SYS:S
+DH1:C/Assign REXX: SYS:Rexxc
+DH1:C/Assign T: RAM:
+DH1:C/Path C: SYS:Rexxc SYS:System ADD
+DH1:C/Stack 8192
+"""
+else:
+    assigns = 'DH1:C/Assign LIBS: DH1:Libs\n'
 startup = f'''C:Echo BOOT_START >DH0:output/00_BOOT_START
-DH1:C/Assign LIBS: DH1:Libs
-C:Echo LIBS_READY >DH0:output/10_LIBS_READY
+{assigns}'''
+startup += f'''C:Echo LIBS_READY >DH0:output/10_LIBS_READY
 C:Echo BEFORE >DH0:output/20_BEFORE
 DH0:{a.executable.name} {a.args} >DH0:output/program.txt
 C:Echo $RC >DH0:output/30_RC_$RC

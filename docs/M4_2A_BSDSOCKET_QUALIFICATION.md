@@ -382,3 +382,25 @@ created E1_MAIN and OPEN_OK, then timed out without SOCKET_OK/RC/AFTER/DONE.
 This places the current M4.2a blocker at the FS-UAE bsdsocket `socket()` call,
 before DNS, sendto, WaitSelect, recvfrom, or AmiNTP protocol handling. No
 application networking change is justified.
+
+## Current FS-UAE requalification
+
+The deterministic runner now supports the repaired M3.4-style bootstrap and
+uses unique disposable run directories. With FS-UAE 3.2.35, A1200/020,
+2 MiB Chip, 8 MiB Fast, Kickstart 40.68, Workbench 40.42, and the A1200
+Workbench volume, the trivial process gate passed with both
+`bsdsocket_library=0` and `=1`. The native VERSION gate also passed in both
+modes, returning `AmiNTP 0.3.2-m3.2` and RC 0.
+
+The full-system assign experiment showed that assigning `SYS:` itself stalls
+this minimal disposable startup; the working qualification path therefore uses
+the proven absolute `DH1:C/Assign LIBS: DH1:Libs` bootstrap. This does not
+change the Workbench files or AmiNTP.
+
+A fresh independent socket probe again opened `bsdsocket.library` and reached
+`E1_MAIN`/`OPEN_OK`, but `socket(AF_INET, SOCK_DGRAM, 0)` did not return before
+the 30-second watchdog. The run was classified TIMEOUT. Consequently the
+M4.2a network matrix remains BLOCKED at the independent FS-UAE socket boundary;
+DNS, SNTP, configuration, clock sync, and ARexx network tests remain
+UNVERIFIED. Amiberry results remain supplemental and are not used as the
+FS-UAE release gate.
