@@ -4,3 +4,4 @@ AmiNTP
 *.lha
 build/
 dist/
+ci/local-amigaos/runtime/
