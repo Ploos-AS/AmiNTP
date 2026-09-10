@@ -61,3 +61,20 @@ AmiNTP or AmiTCP_NG protocol change.
 
 Only after the interface reaches an online state can socket, raw UDP, AmiNTP,
 SYNC NORTC, and ARexx network tests be qualified. M4.2a remains separate.
+
+## Upstream parity correction
+
+AmiTCP_NG's documented successful A2065 qualification uses **Amiberry v7.1.1
+with its in-tree SLIRP/A2065 emulation**, not FS-UAE. Its guest network is
+`10.0.2.15/24`, gateway `10.0.2.2`, DNS `10.0.2.3`; the upstream documentation
+explicitly says the Debian FS-UAE harness has no network card and directs real
+NIC tests to Amiberry.
+
+The earlier direct probe used bare `a2065.device`. Upstream's troubleshooting
+notes state that direct `OpenDevice()` requires the full
+`DEVS:Networks/a2065.device` path. The reusable probe now defaults to that path
+and accepts an explicit device argument. The earlier bare-name `IOERR_OPENFAIL`
+is therefore not treated as conclusive. The FS-UAE AddNetInterface hang remains
+unresolved at the device boundary, with no evidence of an AmiNTP or AmiTCP_NG
+protocol defect. The next valid runtime path is the upstream Amiberry Docker
+harness using the locally owned ROM, Workbench, and driver inputs.

@@ -21,6 +21,7 @@ int main(int argc, char **argv)
     struct IOSana2Req *req;
     struct Sana2DeviceQuery query;
     const char *command = argc > 1 ? argv[1] : "open";
+    const char *device = argc > 2 ? argv[2] : "DEVS:Networks/a2065.device";
     ULONG open_error;
 
     puts("BEFORE_OPEN");
@@ -30,7 +31,7 @@ int main(int argc, char **argv)
     req = (struct IOSana2Req *)CreateIORequest(port, sizeof(*req));
     if (req == 0) { puts("CREATE_REQUEST=FAIL"); DeleteMsgPort(port); return 20; }
 
-    open_error = OpenDevice((CONST_STRPTR)"a2065.device", 0,
+    open_error = OpenDevice((CONST_STRPTR)device, 0,
                             (struct IORequest *)req, 0);
     printf("OPENERR=%lu\n", (unsigned long)open_error);
     fflush(stdout);
