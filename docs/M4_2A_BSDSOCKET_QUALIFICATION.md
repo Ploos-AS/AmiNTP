@@ -292,3 +292,11 @@ The required five-run E_BASE and three-run full-E1 repeatability gates have not
 yet been completed with unique per-run directories and PID-based FS-UAE
 lifecycle management. Therefore all prior closure observations remain
 superseded/inconclusive and no object boundary or archive analysis is claimed.
+
+## Deterministic runner
+
+Added `ci/local-amigaos/run-runtime-probe.py`. Each invocation creates a unique
+run directory, rejects reuse/stale markers, writes absolute DH0 marker files,
+records marker timing, owns one FS-UAE process group, polls only that run, and
+classifies completion as PASS, GUEST_FAIL, or TIMEOUT before terminating and
+reaping the owned process. The five-run E_BASE gate has not yet been executed.
