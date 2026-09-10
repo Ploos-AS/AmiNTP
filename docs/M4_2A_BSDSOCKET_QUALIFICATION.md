@@ -325,3 +325,16 @@ run reached `00_BOOT_START`, `10_LIBS_READY`, and `20_BEFORE`, then timed out
 without `E1_MAIN`, RC, AFTER, or DONE. This is the first stable provider
 closure failure; ARexx O/C/A attribution is therefore superseded. Further
 closure and linker-delta work must begin by minimizing the QUERY closure.
+
+## Q minimization result
+
+The deterministic Q closure failure was reduced to the libc primitive
+`gettimeofday`. `query.o` has an undefined `_gettimeofday` reference (and
+`___udivdi3`); Q requires `sntp.o` and `net_amiga.o` for its other project
+symbols. E_BASE + `sntp.o` and E_BASE + `net_amiga.o` each pass under the
+runner. A standalone Bebbo `-m68000 -mcrt=nix20` probe that only calls
+`gettimeofday()` reaches BOOT/LIBS/BEFORE but never creates E1_MAIN and times
+out, reproducing the same pre-main boundary. This is the first primitive-level
+causal evidence. No production change was made; the next safe step is to
+replace or isolate the Amiga time-source implementation with host/static
+regression coverage before rerunning Q.
