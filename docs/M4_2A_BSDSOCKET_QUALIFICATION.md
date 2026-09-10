@@ -431,3 +431,35 @@ observed boundary being the FS-UAE-provided bsdsocket socket implementation
 after a correct canonical library-vector call. No runtime initialization call
 has been added; the installed NDK pattern provided no demonstrated requirement
 for an extra pre-socket initialization step.
+
+## Host/runtime isolation follow-up
+
+The exact UDP probe was reproduced once more with the generated configuration
+(`bsdsocket_library = 1`). It reached `OPEN_OK` and `BEFORE_SOCKET`, then timed
+out. A TCP build behaved identically. A control probe using the same canonical
+inline interface reached `OPEN_OK` and `BEFORE_INET`, then hung in
+`inet_addr("127.0.0.1")`, showing that the problem is not specific to UDP
+socket creation alone; host/network-touching bsdsocket vectors are affected.
+
+The host control environment can create IPv4 UDP/TCP sockets when run with the
+required host permissions. During a guest hang, non-invasive elevated `strace`
+attached to the owned FS-UAE process (28 threads): the emulator was spending
+the sample in futex waits while the main process remained active. No host
+`socket()`/connect attempt was observed in the selected trace set. This is
+consistent with an emulator-side synchronization/backend wait, but does not
+identify an internal FS-UAE function.
+
+The standalone probe was rebuilt with `-mcrt=nix13` (SHA-256
+`605c434e14a33eb79809620366d722615d852ef3f043d8e4c590108f0cb6fae7`) and
+`-mcrt=clib2` (SHA-256 not retained as a qualification artifact). Both reached
+the same pre-socket markers and timed out. Thus the result is not specific to
+the `nix20` startup variant. The installed NDK inline disassembly remains the
+canonical `jsr a6@(-30)` call with D0/D1/D2 arguments and
+`AmiNTPSocketBase`.
+
+An A4000/020 control boot using the A4000 ROM and the A1200 Workbench did not
+reach boot markers, so no machine-profile socket conclusion is drawn from that
+attempt. No alternate licensed Workbench environment was available for a
+controlled comparison. The narrow classification remains **unresolved
+emulator/runtime blocker**, with FS-UAE bsdsocket/backend synchronization the
+leading evidence-supported location; AmiNTP networking code is unchanged.
