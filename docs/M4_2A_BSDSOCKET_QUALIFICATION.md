@@ -463,3 +463,23 @@ attempt. No alternate licensed Workbench environment was available for a
 controlled comparison. The narrow classification remains **unresolved
 emulator/runtime blocker**, with FS-UAE bsdsocket/backend synchronization the
 leading evidence-supported location; AmiNTP networking code is unchanged.
+
+## Independent bsdsocktest cross-check
+
+The upstream open-source `tbdye/bsdsocktest` repository was checked out
+externally at commit `cb08680843bc9cff93d57ca4760e59ab71e93b57` (MIT license;
+source retained outside this repository). Its documented build uses
+`-noixemul -O2 -Wall -Wextra -m68020 -fomit-frame-pointer`.
+
+The unmodified upstream build does not compile with the installed Bebbo NDK:
+the NDK inline `SocketBaseTags` varargs macro expands `_sfdc_vararg`, which this
+compiler/header combination does not define. Defining `NO_INLINE_VARARGS` gets
+through compilation but leaves `SocketBaseTags` unresolved at link time. No
+bsdsocktest binary was therefore produced, and LIST/utility/socket suite
+results are **UNVERIFIED**. This is a toolchain/header integration limitation,
+not evidence that bsdsocktest passed or failed at runtime.
+
+The requested emulator A/B could not be performed because no practical second
+FS-UAE build was available locally. Accordingly, no 3.2.35 regression range or
+fix commit is claimed. The independent canonical probes remain the observed
+runtime evidence: UDP and TCP socket calls hang, while OpenLibrary succeeds.
