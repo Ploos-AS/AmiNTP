@@ -92,12 +92,10 @@ automatic_input_grab = 0
 s = f"""DH1:C/Assign LIBS: DH1:Libs
 C:Assign Q: DH0:
 C:Assign SYS: DH1:
-C:Assign C: DH1:C
 C:Assign LIBS: DH1:Libs
 C:Assign DEVS: DH1:Devs
 C:Assign L: DH1:L
 C:Assign FONTS: DH1:Fonts
-C:Assign LOCALE: DH1:Locale
 C:Assign ENV: RAM:Env
 C:Assign ENVARC: Q:env
 C:Assign S: DH1:S

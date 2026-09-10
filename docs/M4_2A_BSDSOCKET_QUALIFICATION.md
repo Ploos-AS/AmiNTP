@@ -270,3 +270,12 @@ local FS-UAE watchdog; the final O/C/A run did not produce `E1_MAIN`, so the
 ARexx/provider closure remains the first failing region. No archive-member delta
 or causal production symbol has yet been proven. No product code or networking
 was changed.
+
+## Harness determinism audit
+
+The current preparation script still contained a redundant `C:Assign C: DH1:C`
+line after the absolute `DH1:C/Assign LIBS:` bootstrap. That reintroduced the
+known startup race and explains the unstable sequential closure results. The
+harness has now removed the redundant C reassignment (and the stalling LOCALE
+assignment); diagnostics must use one unique run directory and absolute DH0
+sentinels before closure attribution resumes.
