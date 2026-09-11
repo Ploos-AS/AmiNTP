@@ -812,3 +812,20 @@ watchdog termination. This means the call did not reach `amintp_udp_query()`;
 the current boundary is earlier in CLI/configuration or command startup, not
 proven to be parser, socket, send, or WaitSelect behavior. Temporary tracing was
 removed and no production diagnostic markers were committed.
+
+## Config-stage and production-query markers
+
+Temporary top-level markers proved the numeric CLI QUERY reaches and returns
+from `amintp_load_config("ENVARC:AmiNTP/AmiNTP.conf", ...)`; the file-open
+attempt returned failure normally (`C10_FOPEN_FAILED`), followed by
+`M05_CONFIG_RETURN` and `M07_QUERY_DISPATCH_BEGIN`. Thus ENVARC fopen is not the
+pre-query hang.
+
+A second temporary build with markers in `amintp_udp_query()` reached:
+`Q00_ENTER`, `Q01_TIME_DONE`, `Q02_OPEN_OK`, `Q03_PARSE_BEGIN`,
+`Q04_PARSE_DONE`, and `Q05_SOCKET_RETURN`, then watchdoged. This establishes
+that the numeric parser and socket call return; the remaining boundary is the
+error/cleanup path after the socket result (the profile returned a failed socket
+rather than a usable descriptor). Temporary markers were removed. No further
+network qualification is claimed because no deterministic UDP fixture was
+available and the query did not reach send/receive.
