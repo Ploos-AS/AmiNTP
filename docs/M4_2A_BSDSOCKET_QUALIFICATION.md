@@ -678,3 +678,24 @@ The runtime memory dump still shows `SocketBase-294 -> 0x00F021F0` and
 execution/fetch of the rtarea target (or an alternate execution engine path not
 covered by these hooks). Guest PC/A6 at watchdog and symbolic CPU-thread stack
 remain unverified. No AmiNTP source was changed; M4.2a remains blocked.
+
+## Guest call-site disassembly
+
+The explicit TagList probe disassembles the relevant sequence as:
+
+```
+0x2F4  move.l  0x28,d0
+0x2FA  movea.l d0,a6
+0x2FC  movea.l a5@(-16),a0
+0x300  jsr     a6@(-294)
+0x304  move.l  d0,a5@(-20)
+```
+
+Thus the static call-site offset is `TAGLIST_CALL_PC=0x300` and the expected
+post-call return offset is `TAGLIST_RETURN_PC=0x304` within the probe text
+segment. The preceding code loads A6 from the SocketBase global and passes the
+TagItem pointer in A0. A runtime register capture and relocated absolute guest
+PC were not obtained: the self-built emulator still times out after
+`BEFORE_TAGLIST` without producing CPU fetch, A-line, or trap markers. The
+runtime vector/stub evidence remains valid (`SocketBase-294 -> 0x00F021F0`,
+`A0 68 4E 75`).
