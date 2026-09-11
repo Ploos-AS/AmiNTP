@@ -879,3 +879,14 @@ the fixture received no packet and the guest run timed out. The assumed gateway
 address is therefore not yet proven as the guest-visible host endpoint for this
 FS-UAE bsdsocket configuration. No SNTP or AmiNTP protocol conclusion is drawn;
 qualification remains blocked at fixture reachability.
+# M4.2a numeric qualification follow-up
+
+With Bebbo `m68k-amigaos-gcc` 6.5.0b (20260807212032), the combined
+two-field timestamp comparison can generate a post-incremented request pointer;
+the subsequent fraction access then uses effective offset +8 instead of +4.
+The minimal workaround keeps seconds and fraction loads in separate locals.
+The resulting assembly uses the required request fraction offset +4.
+
+The workaround passed the valid loopback numeric QUERY gate 5/5 (RC0,
+`NTP_FRACTION=1073741824`, `AMIGA_MICROS=250000`, AFTER/DONE, no watchdog),
+the malformed-origin rejection gate (RC10), and the timeout gate (RC10).

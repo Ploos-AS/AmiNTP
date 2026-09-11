@@ -29,7 +29,19 @@ static struct amintp_ntp_timestamp read_ts(const unsigned char *p)
 static int timestamp_equal(const struct amintp_ntp_timestamp *a,
                            const struct amintp_ntp_timestamp *b)
 {
-    return a->seconds == b->seconds && a->fraction == b->fraction;
+    /* Keep field loads separate; Bebbo GCC 6.5.0b miscompiles the combined
+     * comparison by applying a post-increment before the second field load. */
+    uint32_t a_seconds;
+    uint32_t a_fraction;
+    uint32_t b_seconds;
+    uint32_t b_fraction;
+
+    a_seconds = a->seconds;
+    a_fraction = a->fraction;
+    b_seconds = b->seconds;
+    b_fraction = b->fraction;
+
+    return a_seconds == b_seconds && a_fraction == b_fraction;
 }
 
 void amintp_sntp_build_request(unsigned char packet[AMINTP_NTP_PACKET_SIZE],
