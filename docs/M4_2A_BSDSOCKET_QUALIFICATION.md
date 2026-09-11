@@ -737,3 +737,30 @@ and r6): all five returned normally and completed cleanup. Its direct socket
 stub control still hangs and is ABI-inconclusive because it bypasses the normal
 library-base setup. The old probe's exact cause is not yet isolated; its
 observed hang boundary is TagList, not socket. No AmiNTP source changed.
+
+## Historical diagnostic false lead resolved
+
+The old `/tmp/tagprobe.c` opened the library into a local variable:
+
+```c
+b = OpenLibrary("bsdsocket.library", 4);
+```
+
+but never assigned the NDK base symbol used by the inline calls:
+
+```c
+struct Library *AmiNTPSocketBase;
+```
+
+Consequently `SocketBaseTagList(tags)` used a null/stale `AmiNTPSocketBase`,
+while the fresh `/tmp/matrix.c` explicitly performs `AmiNTPSocketBase = b`.
+The old probe therefore hung at TagList; it never reached its later socket call.
+
+A one-line old-probe repair adding `AmiNTPSocketBase=b` produced binary
+`/tmp/tagprobe_fixed` (SHA-256
+`97cb4808b199ca21209477462038af1628fe00184c216ad959a47f2f3968d473`) and
+returned through TagList, `inet_addr`, and the normal socket LVO on five fresh
+runs. The canonical fresh normal socket control was also PASS 5/5, and the
+fresh `inet_addr("127.0.0.1")` control was PASS 5/5. This proves the historical
+hang was an invalid SocketBase ABI setup in the diagnostic probe, not an FS-UAE
+bsdsocket defect. No AmiNTP source changed.
