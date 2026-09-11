@@ -699,3 +699,25 @@ PC were not obtained: the self-built emulator still times out after
 `BEFORE_TAGLIST` without producing CPU fetch, A-line, or trap markers. The
 runtime vector/stub evidence remains valid (`SocketBase-294 -> 0x00F021F0`,
 `A0 68 4E 75`).
+
+## Fresh four-way calltrap control
+
+A fresh standalone Bebbo `-m68000 -mcrt=nix20` diagnostic (`/tmp/matrix`,
+external to the repository) dynamically resolved both library targets after
+OpenLibrary. With empty TagItem and errno-pointer TagItem controls, the observed
+results were:
+
+| Control | Path | Result |
+|---|---|---|
+| TagList normal | normal `SocketBaseTagList()` LVO | RETURN |
+| TagList direct | direct call to resolved `0x00F021F0` | RETURN |
+| socket normal | normal `socket(AF_INET, SOCK_DGRAM, 0)` | RETURN |
+| socket direct | direct call to resolved socket stub | HANG |
+
+The direct socket call does not establish the library-base register expected by
+the bsdsocket ABI, so its hang is not treated as a valid calltrap comparison.
+This fresh control does demonstrate that valid TagList calltrap execution and a
+normal socket LVO call can return in the same FS-UAE profile. It conflicts with
+the older `/tmp/tagprobe` timeout and therefore leaves the original failure
+reproducibility unresolved; no AmiNTP source was changed and M4.2a remains
+blocked pending reconciliation of the probe difference.
