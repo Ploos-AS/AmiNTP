@@ -850,3 +850,18 @@ failed socket result, enters cleanup, and returns from `CloseLibrary()`; the
 cleanup call itself is not the hang boundary. The remaining stall is after
 `CloseLibrary()` and before normal query-command completion. No SNTP traffic was
 attempted and no production source change was made in this diagnostic pass.
+
+## Host socket permission boundary
+
+The installed Amiga SDK maps errno value `1` to `EPERM` (`sys-include/sys/errno.h`
+and clib2 `errno.h`: `#define EPERM 1`). In the ordinary execution context,
+host Python IPv4 UDP and TCP socket creation both fail with errno 1,
+`Operation not permitted`. With host socket permission enabled, both succeed.
+
+The same A/B applies to FS-UAE: under the ordinary context the guest socket
+returns `-1`; under the permitted context the initialized socket lifecycle
+probe returns `FD=0`, closes the descriptor, and `CloseLibrary()` returns.
+This proves the previous guest failure was inherited host sandbox policy, not an
+FS-UAE bsdsocket defect. The real AmiNTP public numeric query was retried in the
+permitted context but no deterministic SNTP fixture was available, so no SNTP
+success is claimed.
