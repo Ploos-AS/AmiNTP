@@ -721,3 +721,19 @@ normal socket LVO call can return in the same FS-UAE profile. It conflicts with
 the older `/tmp/tagprobe` timeout and therefore leaves the original failure
 reproducibility unresolved; no AmiNTP source was changed and M4.2a remains
 blocked pending reconciliation of the probe difference.
+
+## Probe reconciliation run
+
+The historical `/tmp/tagprobe` (`cec7f299...`) was rerun under the canonical
+FS-UAE 3.2.35 profile and timed out after `BEFORE_TAGLIST`; it did not reach
+its later socket call. The fresh `/tmp/matrix` probe (`79fb3d7f...` at the
+initial build) was run under the identical profile and returned from normal
+TagList and normal UDP `socket()` calls. Repeating the order old/fresh/old/fresh
+produced TIMEOUT/PASS/TIMEOUT/PASS, so the discrepancy is binary/probe-specific
+rather than a demonstrated boot-order effect.
+
+The fresh canonical normal socket control was repeated five times (runs r1-r4
+and r6): all five returned normally and completed cleanup. Its direct socket
+stub control still hangs and is ABI-inconclusive because it bypasses the normal
+library-base setup. The old probe's exact cause is not yet isolated; its
+observed hang boundary is TagList, not socket. No AmiNTP source changed.
