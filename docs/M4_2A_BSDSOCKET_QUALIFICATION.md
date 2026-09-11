@@ -784,3 +784,20 @@ a numeric string, so the first application boundary is unresolved within the
 name-resolution path. No production source was changed and no claim of SNTP
 qualification is made. M4.2a remains blocked pending a controlled resolver/
 network fixture or evidence-driven application diagnosis.
+
+## Numeric IPv4 resolver fast path
+
+`src/net_amiga.c` and the host backend now parse strict dotted-quad IPv4
+literals before resolver use. Valid literals are converted directly into
+`struct in_addr`; hostnames retain the existing `gethostbyname()` path and
+validation. The parser accepts exactly four decimal octets in `0..255`, with
+no trailing characters, and has deterministic host tests for valid literals,
+malformed literals, and hostname strings.
+
+The native rebuild (Bebbo GCC, `-m68000 -mcrt=nix20`) produced AmiNTP
+SHA-256 `b265d31c8ab7f07a64d20f5b05eb24ae9f033dddc1195fdd3e2b51fd9d35a012`.
+`make check` and `make m4.2-check` pass. VERSION passes under FS-UAE 3.2.35.
+A standalone parser probe returns, but the first real numeric AmiNTP QUERY still
+watchdogs before application output; no successful SNTP exchange has yet been
+observed. The next boundary is therefore in the real AmiNTP query path after
+CLI/config handling, and no further network gates were claimed.

@@ -8,7 +8,7 @@ HOST_CC ?= cc
 HOST_CFLAGS ?= -O2 -Wall -Wextra -Werror
 
 TARGET := AmiNTP
-COMMON_SOURCES := src/main.c src/cli.c src/config.c src/version.c src/sntp.c src/query.c src/time.c src/sync.c src/arexx_core.c src/arexx_ops.c
+COMMON_SOURCES := src/main.c src/cli.c src/config.c src/version.c src/sntp.c src/ipv4.c src/query.c src/time.c src/sync.c src/arexx_core.c src/arexx_ops.c
 AMIGA_SOURCES := $(COMMON_SOURCES) src/net_amiga.c src/clock_amiga.c src/rtc_amiga.c src/arexx_amiga.c src/time_source_amiga.c
 OBJECTS := $(AMIGA_SOURCES:.c=.o)
 HOST_TARGET := build/host/AmiNTP
@@ -45,14 +45,17 @@ host-check:
 
 m1-check:
 	@mkdir -p build/host
-	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(M1_TEST) tests/test_sntp.c src/sntp.c
+	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(M1_TEST) tests/test_sntp.c src/sntp.c src/ipv4.c
 	@$(M1_TEST)
+	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o build/host/test_ipv4 tests/test_ipv4.c src/ipv4.c
+	@build/host/test_ipv4
+	@echo "M1.0 IPv4 literal tests: PASS"
 	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(HOST_TARGET) $(COMMON_SOURCES) src/net_posix.c src/clock_host.c src/rtc_host.c src/arexx_host.c src/time_source_host.c
 	@echo "M1.2 host compile: PASS"
 
 m1.3-check: m1-check
 	@mkdir -p build/host
-	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(M13_TEST) tests/test_query.c src/query.c src/sntp.c src/time_source_host.c
+	$(HOST_CC) $(CPPFLAGS) $(HOST_CFLAGS) -o $(M13_TEST) tests/test_query.c src/query.c src/sntp.c src/ipv4.c src/time_source_host.c
 	@$(M13_TEST)
 	@echo "M1.3 hardening tests: PASS"
 

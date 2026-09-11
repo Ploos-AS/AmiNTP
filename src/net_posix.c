@@ -9,6 +9,7 @@
 #include <unistd.h>
 
 #include "amintp/net.h"
+#include "amintp/ipv4.h"
 
 int amintp_udp_query(const char *host, unsigned short port,
                      const unsigned char *request, size_t request_size,
@@ -21,17 +22,17 @@ int amintp_udp_query(const char *host, unsigned short port,
     unsigned attempt;
     int fd;
 
-    he = gethostbyname(host);
-    if (he == 0 || he->h_addr_list == 0 || he->h_addr_list[0] == 0 ||
-        he->h_addrtype != AF_INET || he->h_length != sizeof(addr.sin_addr)) {
-        return 10;
-    }
-
     memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
-    memcpy(&addr.sin_addr, he->h_addr_list[0], sizeof(addr.sin_addr));
-
+    if (!amintp_parse_ipv4_literal(host, &addr.sin_addr)) {
+        he = gethostbyname(host);
+        if (he == 0 || he->h_addr_list == 0 || he->h_addr_list[0] == 0 ||
+            he->h_addrtype != AF_INET || he->h_length != sizeof(addr.sin_addr)) {
+            return 10;
+        }
+        memcpy(&addr.sin_addr, he->h_addr_list[0], sizeof(addr.sin_addr));
+    }
     fd = socket(AF_INET, SOCK_DGRAM, 0);
     if (fd < 0) {
         return 10;
