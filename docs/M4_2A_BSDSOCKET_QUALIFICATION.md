@@ -764,3 +764,23 @@ runs. The canonical fresh normal socket control was also PASS 5/5, and the
 fresh `inet_addr("127.0.0.1")` control was PASS 5/5. This proves the historical
 hang was an invalid SocketBase ABI setup in the diagnostic probe, not an FS-UAE
 bsdsocket defect. No AmiNTP source changed.
+
+## Real AmiNTP runtime resumed
+
+A clean native rebuild produced AmiNTP SHA-256
+`1229b1ed7236d908f5581a7166be56ba19d3d0bd434cec5b6fb15d3c2cbfd8f9` with
+Bebbo GCC `-m68000 -mcrt=nix20`; the binary is AmigaOS loadseg format and has
+no unresolved ixemul/gettimeofday symbol.
+
+Under the canonical FS-UAE 3.2.35 profile, `AmiNTP VERSION` passed with
+`AmiNTP 0.3.2-m3.2`, RC 0, and clean markers. The repaired standalone control
+returned through TagList, `inet_addr`, and the normal socket call; in this
+profile its socket result was a normal failure (`SOCKET_FAIL`), not a hang.
+
+The first real numeric query (`QUERY SERVER=85.24.237.71 TIMEOUT=3 RETRIES=1`)
+timed out after the runner's `BEFORE` marker, with no application output. The
+current Amiga implementation calls `gethostbyname()` before `socket()` even for
+a numeric string, so the first application boundary is unresolved within the
+name-resolution path. No production source was changed and no claim of SNTP
+qualification is made. M4.2a remains blocked pending a controlled resolver/
+network fixture or evidence-driven application diagnosis.
