@@ -865,3 +865,17 @@ This proves the previous guest failure was inherited host sandbox policy, not an
 FS-UAE bsdsocket defect. The real AmiNTP public numeric query was retried in the
 permitted context but no deterministic SNTP fixture was available, so no SNTP
 success is claimed.
+
+## Permitted-context socket preflight and fixture attempt
+
+Host preflight in the permitted execution context succeeded for both IPv4 UDP
+and TCP socket creation. The canonical initialized guest UDP lifecycle likewise
+returned a valid descriptor (`FD=0`) and completed `CloseSocket`/
+`CloseLibrary`.
+
+A deterministic SNTP fixture was started on the host at UDP port 49234. A real
+AmiNTP numeric query targeted `10.0.2.2:49234` with `TIMEOUT=2 RETRIES=0`, but
+the fixture received no packet and the guest run timed out. The assumed gateway
+address is therefore not yet proven as the guest-visible host endpoint for this
+FS-UAE bsdsocket configuration. No SNTP or AmiNTP protocol conclusion is drawn;
+qualification remains blocked at fixture reachability.
