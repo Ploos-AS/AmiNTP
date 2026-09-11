@@ -41,9 +41,11 @@ DH1:C/Stack 8192
 """
 else:
     assigns = ('DH1:C/Assign LIBS: DH0:Libs\n' if a.isolated_libs else 'DH1:C/Assign LIBS: DH1:Libs\n')
+# AmiNTP uses RC 0/5/10/20; keep Startup-Sequence alive to capture RC20.
 startup = f'''C:Echo BOOT_START >DH0:output/00_BOOT_START
 {assigns}'''
-startup += f'''C:Echo LIBS_READY >DH0:output/10_LIBS_READY
+startup += f'''C:FailAt 21
+C:Echo LIBS_READY >DH0:output/10_LIBS_READY
 C:Echo BEFORE >DH0:output/20_BEFORE
 DH0:{a.executable.name} {a.args} >DH0:output/program.txt
 C:Echo $RC >DH0:output/30_RC_$RC
