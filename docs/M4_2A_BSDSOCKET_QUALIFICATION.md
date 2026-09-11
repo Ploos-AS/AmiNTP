@@ -801,3 +801,14 @@ A standalone parser probe returns, but the first real numeric AmiNTP QUERY still
 watchdogs before application output; no successful SNTP exchange has yet been
 observed. The next boundary is therefore in the real AmiNTP query path after
 CLI/config handling, and no further network gates were claimed.
+
+## Real-query boundary trace
+
+Temporary markers were added around the production Amiga UDP path and the same
+numeric QUERY was rerun with a 35-second watchdog (`TIMEOUT=5`, `RETRIES=2`,
+so the expected network wait budget is approximately 15 seconds plus margin).
+The run emitted no `Q02..Q10` markers and produced no application output before
+watchdog termination. This means the call did not reach `amintp_udp_query()`;
+the current boundary is earlier in CLI/configuration or command startup, not
+proven to be parser, socket, send, or WaitSelect behavior. Temporary tracing was
+removed and no production diagnostic markers were committed.
