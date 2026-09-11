@@ -829,3 +829,24 @@ error/cleanup path after the socket result (the profile returned a failed socket
 rather than a usable descriptor). Temporary markers were removed. No further
 network qualification is claimed because no deterministic UDP fixture was
 available and the query did not reach send/receive.
+
+## Socket failure and cleanup boundary
+
+A focused production trace with `SERVER=85.24.237.71 PORT=123 TIMEOUT=1
+RETRIES=0` observed:
+
+```
+S00_BEFORE_SOCKET
+S01_AFTER_SOCKET
+S02_SOCKET_FAILED
+S05_BEFORE_CLOSELIBRARY
+S06_AFTER_CLOSELIBRARY
+```
+
+The signed socket result is `-1` in the equivalent standalone lifecycle probe;
+errno remains zero without explicit errno TagList setup and becomes `1` with the
+known errno-pointer TagList. The production path therefore receives a normal
+failed socket result, enters cleanup, and returns from `CloseLibrary()`; the
+cleanup call itself is not the hang boundary. The remaining stall is after
+`CloseLibrary()` and before normal query-command completion. No SNTP traffic was
+attempted and no production source change was made in this diagnostic pass.
