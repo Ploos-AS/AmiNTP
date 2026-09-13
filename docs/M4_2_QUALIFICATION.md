@@ -1,8 +1,22 @@
 # M4.2 AmiTCP runtime qualification
 
-Overall: **BLOCKED**, 2026-09-08 (Aminet driver probe). Real AmigaOS and the installed AmiTCP_NG
-library were exercised. No successful external SNTP exchange was observed.
-Neither AROS nor FS-UAE's host socket emulation is counted as AmiTCP evidence.
+Overall: **PASS**, 2026-09-13 (native AmiTCP/A2065 qualification). Real
+AmigaOS 2.1 and AmiTCP_NG 4.1.5 were exercised over an emulated A2065 with
+FS-UAE's host `bsdsocket.library` emulation disabled. The successful result is
+documented in [M4.2b](M4_2B_AMITCP_QUALIFICATION.md). Neither AROS nor FS-UAE's
+host socket emulation is counted as AmiTCP evidence.
+
+The passing profile is A2000-compatible, CPU 68000, Kickstart 37.175 (2.04),
+Workbench 38.36 (2.1), official `a2065.device` 2.14, and FS-UAE A2065/SLIRP.
+With `AmiTCP:` correctly assigned to `Generic415:`, `AddNetInterface` returned
+RC 0 and configured `10.0.2.15` by DHCP. AmiNTP completed deterministic native
+UDP QUERY, exact originate validation, NTP-to-Amiga conversion, 5/5 repeat
+queries, clock update, NORTC, normal RTC update, timeout, and malformed-origin
+tests. No AmiNTP source change was needed.
+
+The older investigations below are retained as historical evidence. Their
+blocked classifications describe earlier invalid or incorrectly provisioned
+runtime profiles and are superseded by the passing A2000-compatible run.
 
 ### Hardware-profile correction
 

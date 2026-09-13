@@ -87,15 +87,18 @@ Qualification split:
 ### M4.2 qualification split
 
 - **M4.2a — FS-UAE `bsdsocket.library`: BLOCKED.** The disposable real-AmigaOS run reached the FS-UAE socket-library setup, but the native executable did not complete `VERSION` before the watchdog; no network PASS is claimed. If completed, this track would qualify only the FS-UAE socket API, DNS/UDP SNTP, clock sync, and ARexx behavior.
-- **M4.2b — AmiTCP_NG/SANA-II: BLOCKED.** The A2065/LANCE path remains blocked on FS-UAE and is tracked in `docs/M4_2_QUALIFICATION.md`. M4.2a does not qualify AmiTCP, Miami, Roadshow, SANA-II drivers, physical Ethernet, or real hardware.
+- **M4.2b — AmiTCP_NG/SANA-II: PASS.** An A2000-compatible 68000/KS2.04/WB2.1
+  FS-UAE profile with native AmiTCP_NG 4.1.5, official A2065 2.14 driver,
+  A2065/SLIRP, and `bsdsocket_library = 0` passes DHCP, native UDP QUERY,
+  protocol validation, clock update, NORTC, RTC, failure paths, and 5/5 repeat
+  queries. See `docs/M4_2B_AMITCP_QUALIFICATION.md`. This does not qualify
+  Miami, Roadshow, physical Ethernet, or real hardware.
 
 ## M4.2+ — TCP/IP stacks and runtime matrix
 
-- AmiTCP qualification: [M4.2 local report](M4_2_QUALIFICATION.md) — BLOCKED;
-  installed AmiTCP_NG opens but has no external interface, route or DNS;
-  FS-UAE A2065/LANCE compatibility remains blocked. SNTP hardening is complete:
-  peer address/port validation, nonzero per-query originate correlation,
-  oversized datagram rejection, and adversarial host tests all pass.
+- AmiTCP qualification: [M4.2 local report](M4_2_QUALIFICATION.md) — PASS on
+  native AmiTCP_NG 4.1.5 with A2065/SLIRP and FS-UAE socket emulation disabled.
+  SNTP hardening and deterministic end-to-end native-stack tests pass.
 - Miami qualification
 - Roadshow qualification
 - native runtime regression matrix

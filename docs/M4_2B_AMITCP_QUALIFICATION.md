@@ -2,8 +2,52 @@
 
 This is separate from M4.2a. It uses AmiTCP_NG's own `LIBS:bsdsocket.library`
 with FS-UAE's built-in `bsdsocket_library = 0`. It does not qualify the
-built-in host socket emulation, AmiTCP 3.x, Miami, Roadshow, SANA-II hardware,
-or a physical A2065.
+built-in host socket emulation, AmiTCP 3.x, Miami, Roadshow, or physical A2065
+hardware.
+
+## Current authoritative result — PASS (2026-09-13)
+
+M4.2b passes on an A2000-compatible FS-UAE profile with CPU 68000,
+Kickstart 37.175 (2.04), Workbench 38.36 (2.1), AmiTCP_NG 4.1.5, the official
+`a2065.device` 2.14, and FS-UAE A2065/SLIRP. The corrected disposable install
+assigns `AmiTCP:` to the installation root, `Generic415:`, not to
+`Generic415:db`. `AddNetInterface` then returns RC 0 and reports:
+
+```text
+A2065: requesting an address via DHCP...
+A2065: up, address 10.0.2.15 (DHCP)
+```
+
+FS-UAE revision was `4ae7ddaec50b567ed80d71ffbff067cb58e945a3` and
+`bsdsocket_library = 0` remained set throughout. The native library opened as
+`bsdsocket.library 4.1 (AmiTCP_NG 4.1.5)`; its live base was validated by name,
+version, and revision. Numeric IPv4 connectivity and native DNS both passed.
+
+The primary NTP test used a deterministic UDP fixture reached from the guest as
+`10.0.2.2:40123`. AmiNTP sent a 48-byte request; the 48-byte mode-4, version-4,
+stratum-2 response copied the request transmit timestamp exactly into its
+originate field. The fixed timestamp was NTP seconds `4000000000`, fraction
+`1073741824`, and AmiNTP reported Amiga seconds `1538550400`, microseconds
+`250000`. The numeric QUERY returned RC 0, as did five consecutive repeats.
+A hostname QUERY through the native DNS configuration also returned RC 0.
+
+The clock tests ran only in the disposable guest. `SYNC NORTC` returned RC 0,
+set the system clock to the deterministic time, reported `RTC=SKIPPED`, and a
+narrow emulator trace saw no `WriteBattClock` call. Normal `SYNC` returned RC 0,
+reported `RTC=UPDATED`, and the same trace observed exactly one
+`WriteBattClock(1538550400)` call from the AmiNTP process. A nonresponsive UDP
+port and a response with a deliberately wrong originate timestamp both
+returned the documented failure RC 10 without leaving a stuck AmiNTP process.
+
+Classification:
+
+```text
+M4_2B_NATIVE_STACK_QUALIFICATION_PASS
+```
+
+The detailed disposable evidence is `/tmp/m4_2b_amintp_native.evidence`.
+Payloads, ROMs, Workbench files, drivers, and guest images remain outside Git.
+No AmiNTP source change was required.
 
 ## Runtime inputs
 
@@ -19,7 +63,7 @@ AmiTCP_NG install data, installs `DEVS:Networks/a2065.device`, and writes an
 `eth0` DHCP interface. `ci/local-amigaos/run-amitcp-ng.py` owns one FS-UAE
 process, records markers, and reaps it on completion or timeout.
 
-## Current result
+## Historical A4000 result
 
 The first A4000 boot reached `BOOT_START` and `LIBS_READY`, then stopped during
 the synchronous `AddNetInterface` call. No interface status, socket probe, UDP
