@@ -6,20 +6,22 @@ The project targets AmigaOS 2.04 and later, with a Motorola 68000 minimum CPU,
 no FPU requirement, no GUI dependencies, and a bsdsocket.library-compatible
 TCP/IP stack.
 
-## Project goals
+## Features
 
 - Native Amiga executable
 - AmigaOS 2.04+
 - Motorola 68000 minimum
 - No FPU required
 - No GUI
-- SNTP over UDP/123
+- SNTP over UDP
 - DNS names and IPv4 addresses
+- Query mode without changing the clock
 - System clock synchronization
 - Optional RTC update
-- Stable CLI interface
-- ARexx control through an `AMINTP` port
-- AmiTCP, Miami and Roadshow compatibility targets
+- `NORTC` mode
+- Configuration via `ENVARC:AmiNTP/AmiNTP.conf`
+- Stable CLI return codes
+- ARexx control through the `AMINTP` port
 - Bebbo GCC toolchain
 
 AmiNTP is intentionally not a full NTP daemon. Its primary job is to obtain
@@ -27,10 +29,20 @@ correct time reliably and expose that functionality through the CLI and ARexx.
 
 ## Current status
 
-M0 foundation is implemented.
+AmiNTP 1.0.0 is release-ready.
 
-The current binary is a CLI skeleton only. Network synchronization, clock
-setting and the ARexx port are introduced by later milestones.
+Native end-to-end qualification has passed on a 68000 / Kickstart 2.04 /
+Workbench 2.1 configuration with:
+
+- AmiTCP_NG 4.1.5 using native `bsdsocket.library`
+- Miami 3.2b2 using native `bsdsocket.library`
+- A2065/SANA-II networking under FS-UAE with socket emulation disabled
+
+Qualification covers IPv4, DNS, numeric and hostname SNTP queries, protocol
+validation, NTP-to-Amiga time conversion, system clock updates, RTC updates,
+`NORTC`, timeout handling, malformed-origin rejection and repeated queries.
+Roadshow remains a compatibility target for a later qualification pass and is
+not claimed as qualified for 1.0.0.
 
 ## Build
 
@@ -58,29 +70,47 @@ The build explicitly targets the 68000:
 -m68000
 ```
 
-## M0 CLI
+## CLI
+
+Examples:
 
 ```text
 AmiNTP ?
 AmiNTP HELP
 AmiNTP VERSION
-AmiNTP SERVER=pool.ntp.org
+AmiNTP QUERY SERVER=pool.ntp.org
+AmiNTP SYNC SERVER=pool.ntp.org
+AmiNTP SYNC SERVER=pool.ntp.org NORTC
 ```
 
-M0 parses the basic command line but deliberately does not contact an NTP
-server yet.
+Configuration defaults can be stored in:
 
-## Planned milestones
+```text
+ENVARC:AmiNTP/AmiNTP.conf
+```
 
-- **M0 — Foundation:** build, platform contract, CLI skeleton, version/help
-- **M1 — SNTP core:** UDP, DNS, packet encode/decode, query, timeout/retry
-- **M2 — Clock:** system clock, RTC, sync and sanity checks
-- **M3 — ARexx:** `AMINTP` port and stable command/result API
-- **M4 — Integration:** configuration and TCP/IP stack qualification
-- **M5 — Release:** native runtime qualification and Aminet packaging
+See `examples/AmiNTP.conf` and the qualification documents under `docs/`.
+
+## Release
+
+The GitHub release workflow is tag-driven. A `v1.0.0` tag builds the native
+68000 binary, runs the regression checks, creates the Aminet-compatible
+`AmiNTP.lha` + `AmiNTP.readme` pair, creates checksums and publishes the files
+as GitHub Release assets.
+
+## Milestones
+
+- **M0 — Foundation:** complete
+- **M1 — SNTP core:** complete
+- **M2 — Clock:** complete
+- **M3 — ARexx/native runtime:** complete
+- **M4 — Integration:** AmiTCP and Miami native qualification complete
+- **M5 — Release:** 1.0.0 release packaging ready
 
 See [docs/ROADMAP.md](docs/ROADMAP.md) for details.
 
-## License
+## Copyright and license
+
+Copyright (c) 2026 Ploos AS.
 
 MIT. See [LICENSE](LICENSE).
