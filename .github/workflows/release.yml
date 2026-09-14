@@ -60,9 +60,8 @@ jobs:
         run: |
           set -euo pipefail
           bash ci/fs-uae/build-native.sh build/release/native
-          cp build/release/native/AmiNTP ./AmiNTP
-          test -s AmiNTP
-          sha256sum AmiNTP
+          test -s build/release/native/AmiNTP
+          sha256sum build/release/native/AmiNTP
 
       - name: Install host packaging dependencies
         run: |
@@ -102,6 +101,8 @@ jobs:
 
       - name: Create GitHub and Aminet packages
         shell: bash
+        env:
+          AMINTP_BINARY: build/release/native/AmiNTP
         run: |
           set -euo pipefail
           bash tools/package_release.sh "${{ steps.version.outputs.version }}"
