@@ -7,16 +7,17 @@ ROOT="AmiNTP-v${VERSION}"
 STAGE="${DIST}/${ROOT}"
 AMINET_ROOT="AmiNTP"
 AMINET_STAGE="${DIST}/${AMINET_ROOT}"
+AMINTP_BINARY="${AMINTP_BINARY:-AmiNTP}"
 
-if [[ ! -f AmiNTP ]]; then
-  echo "ERROR: native AmiNTP binary not found; build it first" >&2
+if [[ ! -f "$AMINTP_BINARY" ]]; then
+  echo "ERROR: native AmiNTP binary not found: $AMINTP_BINARY" >&2
   exit 1
 fi
 
 rm -rf "$STAGE" "$AMINET_STAGE"
 mkdir -p "$STAGE/docs" "$AMINET_STAGE/docs"
 
-cp AmiNTP "$STAGE/AmiNTP"
+cp "$AMINTP_BINARY" "$STAGE/AmiNTP"
 cp README.md LICENSE "$STAGE/"
 if [[ -f examples/AmiNTP.conf ]]; then
   mkdir -p "$STAGE/examples"
