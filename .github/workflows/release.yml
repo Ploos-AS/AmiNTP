@@ -1,0 +1,153 @@
+name: Release AmiNTP
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Package version without leading v (does not publish a GitHub Release)
+        required: true
+        default: '0.3.2-m3.2'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    env:
+      LHA_UPSTREAM_SHA: 16619b066b189ef289bb8b07b37d1c38d550da99
+
+    steps:
+      - name: Checkout tagged source
+        uses: actions/checkout@v4
+
+      - name: Resolve version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
+            TAG="$GITHUB_REF_NAME"
+            VERSION="${TAG#v}"
+          else
+            TAG=""
+            VERSION="${{ inputs.version }}"
+          fi
+          [[ -n "$VERSION" ]]
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          printf 'TAG=%s\nVERSION=%s\n' "$TAG" "$VERSION"
+
+      - name: Verify source version matches release version
+        shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          grep -F "return \"AmiNTP ${VERSION}\";" src/version.c
+
+      - name: Host regression suite
+        run: |
+          make check
+          make m4.2-check
+
+      - name: Build native 68000 AmiNTP
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash ci/fs-uae/build-native.sh build/release/native
+          cp build/release/native/AmiNTP ./AmiNTP
+          test -s AmiNTP
+          sha256sum AmiNTP
+
+      - name: Install host packaging dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y autoconf automake libtool make gcc git lhasa zip
+
+      - name: Build and smoke-test pinned LHa archive writer
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone https://github.com/jca02266/lha.git "$RUNNER_TEMP/lha-src"
+          git -C "$RUNNER_TEMP/lha-src" checkout --detach "$LHA_UPSTREAM_SHA"
+          test "$(git -C "$RUNNER_TEMP/lha-src" rev-parse HEAD)" = "$LHA_UPSTREAM_SHA"
+
+          cd "$RUNNER_TEMP/lha-src"
+          autoreconf -is
+          ./configure --prefix="$RUNNER_TEMP/lha-install" --disable-multibyte-filename
+          make -j2
+          make install
+
+          LHA_CMD="$RUNNER_TEMP/lha-install/bin/lha"
+          SMOKE="$RUNNER_TEMP/lha-smoke"
+          mkdir -p "$SMOKE/src" "$SMOKE/out"
+          printf 'AmiNTP LHa writer smoke test\n' > "$SMOKE/src/payload.txt"
+          (
+            cd "$SMOKE/src"
+            "$LHA_CMD" a "$SMOKE/smoke.lha" payload.txt
+          )
+          "$LHA_CMD" t "$SMOKE/smoke.lha"
+          "$LHA_CMD" l "$SMOKE/smoke.lha" | grep -F payload.txt
+          (
+            cd "$SMOKE/out"
+            "$LHA_CMD" x "$SMOKE/smoke.lha"
+          )
+          cmp "$SMOKE/src/payload.txt" "$SMOKE/out/payload.txt"
+          echo "LHA_CMD=$LHA_CMD" >> "$GITHUB_ENV"
+
+      - name: Create GitHub and Aminet packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash tools/package_release.sh "${{ steps.version.outputs.version }}"
+
+      - name: Verify Aminet package
+        shell: bash
+        run: |
+          set -euo pipefail
+          lha t dist/AmiNTP.lha
+          lha l dist/AmiNTP.lha | tee dist/AmiNTP.lha.contents.txt
+          test -s dist/AmiNTP.readme
+          grep -F 'Short:        Native SNTP client for classic Amiga' dist/AmiNTP.readme
+          grep -F 'Uploader:     Per Gustav Ousdal' dist/AmiNTP.readme
+          grep -F 'Type:         comm/net' dist/AmiNTP.readme
+          grep -F 'Architecture: m68k-amigaos' dist/AmiNTP.readme
+          grep -F "Version:      ${{ steps.version.outputs.version }}" dist/AmiNTP.readme
+          sha256sum -c dist/AmiNTP.lha.sha256
+          sha256sum -c "dist/AmiNTP-v${{ steps.version.outputs.version }}.zip.sha256"
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AmiNTP-${{ steps.version.outputs.version }}-release
+          if-no-files-found: error
+          path: |
+            dist/AmiNTP.lha
+            dist/AmiNTP.readme
+            dist/AmiNTP.lha.sha256
+            dist/AmiNTP.lha.contents.txt
+            dist/AmiNTP-v${{ steps.version.outputs.version }}.zip
+            dist/AmiNTP-v${{ steps.version.outputs.version }}.zip.sha256
+
+      - name: Publish GitHub Release from tag
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+          TAG: ${{ steps.version.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release create "$TAG" \
+            --verify-tag \
+            --title "AmiNTP ${TAG}" \
+            --generate-notes \
+            dist/AmiNTP.lha \
+            dist/AmiNTP.readme \
+            dist/AmiNTP.lha.sha256 \
+            "dist/AmiNTP-v${VERSION}.zip" \
+            "dist/AmiNTP-v${VERSION}.zip.sha256"
