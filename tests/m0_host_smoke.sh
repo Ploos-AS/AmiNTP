@@ -4,7 +4,7 @@ set -eu
 bin=${1:?AmiNTP host binary required}
 
 version=$($bin VERSION)
-[ "$version" = "AmiNTP 0.3.2-m3.2" ]
+[ "$version" = "AmiNTP 1.0.0" ]
 
 $bin HELP | grep -q "minimal SNTP client"
 
