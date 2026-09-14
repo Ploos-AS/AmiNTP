@@ -30,11 +30,13 @@ done
 for doc in docs/*MIAMI*QUALIFICATION*.md docs/*Miami*QUALIFICATION*.md; do
   [[ -f "$doc" ]] && cp "$doc" "$STAGE/docs/"
 done
+[[ -f "docs/RELEASE_NOTES_v${VERSION}.md" ]] && cp "docs/RELEASE_NOTES_v${VERSION}.md" "$STAGE/docs/"
 
 cat > "$STAGE/RELEASE.txt" <<EOF
 AmiNTP v${VERSION}
 
 Copyright: Ploos AS
+Uploader: Per Gustav Ousdal <amiga@ousdal.org>
 License: MIT
 Target: AmigaOS 2.04+, Motorola 68000+, no FPU required
 
@@ -49,7 +51,7 @@ EOF
 
 cat > "$STAGE/AmiNTP.readme" <<EOF
 Short:        Native SNTP client for classic Amiga
-Uploader:     Per Gustav Ousdal
+Uploader:     Per Gustav Ousdal <amiga@ousdal.org>
 Author:       Ploos AS
 Type:         comm/net
 Version:      ${VERSION}
