@@ -40,7 +40,7 @@ int main(void)
     assert(amintp_arexx_dispatch("PING", result, sizeof(result)) == 0);
     assert(!strcmp(result, "PONG"));
     assert(amintp_arexx_dispatch("VERSION", result, sizeof(result)) == 0);
-    assert(strstr(result, "0.3.2-m3.2") != 0);
+    assert(strstr(result, "1.0.0") != 0);
     assert(amintp_arexx_dispatch("STATUS", result, sizeof(result)) == 0);
 
     assert(amintp_arexx_dispatch("LASTSYNC", result, sizeof(result)) == 0);
