@@ -28,7 +28,7 @@ docker run --rm \
     src/query.c \
     src/ipv4.c \
     src/time.c \
-    src/time_amiga.c \
+    src/time_source_amiga.c \
     src/sync.c \
     src/arexx_core.c \
     src/arexx_ops.c \
