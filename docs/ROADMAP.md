@@ -72,7 +72,7 @@ Qualification split:
 
 - M3.3a-c: GitHub-hosted FS-UAE/AROS qualification for emulator boot, native Bebbo 68000 build and real guest CLI execution.
 - M3.4: local FS-UAE or real-AmigaOS qualification for the actual ARexx message path with RexxMast and public port `AMINTP`.
-- AROS is not treated as proof of ARexx compatibility; M3.4 must run on AmigaOS.
+- AROS is not treated as proof of ARexx compatibility; M3.4 runs on AmigaOS.
 
 ## M4 — Integration
 
@@ -86,31 +86,31 @@ Qualification split:
 
 ### M4.2 qualification split
 
-- **M4.2a — FS-UAE `bsdsocket.library`: BLOCKED.** The disposable real-AmigaOS run reached the FS-UAE socket-library setup, but the native executable did not complete `VERSION` before the watchdog; no network PASS is claimed. If completed, this track would qualify only the FS-UAE socket API, DNS/UDP SNTP, clock sync, and ARexx behavior.
-- **M4.2b — AmiTCP_NG/SANA-II: PASS.** An A2000-compatible 68000/KS2.04/WB2.1
-  FS-UAE profile with native AmiTCP_NG 4.1.5, official A2065 2.14 driver,
-  A2065/SLIRP, and `bsdsocket_library = 0` passes DHCP, native UDP QUERY,
-  protocol validation, clock update, NORTC, RTC, failure paths, and 5/5 repeat
-  queries. See `docs/M4_2B_AMITCP_QUALIFICATION.md`. This does not qualify
-  Miami, Roadshow, physical Ethernet, or real hardware.
+- **M4.2a — FS-UAE `bsdsocket.library`: PASS.** Numeric SNTP QUERY, originate validation, timeout and malformed-origin paths pass under visible FS-UAE. The qualification also documents the Bebbo GCC 6.5.0b timestamp-compare code-generation defect and the source-level workaround used by AmiNTP. See `docs/M4_2A_BSDSOCKET_QUALIFICATION.md`.
+- **M4.2b — AmiTCP_NG/SANA-II: PASS.** An A2000-compatible 68000/KS2.04/WB2.1 FS-UAE profile with native AmiTCP_NG 4.1.5, A2065/SANA-II, A2065/SLIRP and `bsdsocket_library = 0` passes DHCP, IPv4, DNS, native UDP QUERY, protocol validation, clock update, NORTC, RTC, failure paths and 5/5 repeat queries. See `docs/M4_2B_AMITCP_QUALIFICATION.md`.
 
 ## M4.2+ — TCP/IP stacks and runtime matrix
 
-- AmiTCP qualification: [M4.2 local report](M4_2_QUALIFICATION.md) — PASS on
-  native AmiTCP_NG 4.1.5 with A2065/SLIRP and FS-UAE socket emulation disabled.
-  SNTP hardening and deterministic end-to-end native-stack tests pass.
-- **Miami qualification: PASS.** Miami 3.2b2 on the same native
-  68000/KS2.04/WB2.1 A2065/SLIRP platform passes IPv4, DNS, deterministic
-  QUERY, clock update, RTC/NORTC, failure paths, and 5/5 stability with
-  `bsdsocket_library = 0`. See
-  `docs/M4_2_PLUS_MIAMI_QUALIFICATION.md`.
-- Roadshow qualification
-- native runtime regression matrix
+- **AmiTCP qualification: PASS.** AmiTCP_NG 4.1.5 is qualified on the native A2065/SANA-II path with FS-UAE socket emulation disabled.
+- **Miami qualification: PASS.** Miami 3.2b2 on the same native 68000/KS2.04/WB2.1 A2065/SLIRP platform passes IPv4, DNS, deterministic QUERY, clock update, RTC/NORTC, failure paths and 5/5 stability with `bsdsocket_library = 0`. See `docs/M4_2_PLUS_MIAMI_QUALIFICATION.md`.
+- **Roadshow qualification: deferred.** Roadshow remains a compatibility target after the 1.0.0 release and is not claimed as qualified for 1.0.0.
+- native runtime regression matrix can be extended after release without blocking 1.0.0.
 
 ## M5 — Release
 
-- release qualification
-- documentation
-- Aminet packaging
-- checksums
-- v1.0.0
+Target release:
+
+- **v1.0.0**
+
+Release requirements:
+
+- release qualification: complete for the claimed AmiTCP/Miami matrix
+- documentation: release-ready
+- Aminet packaging: automated by GitHub Actions
+- `AmiNTP.lha` and sibling `AmiNTP.readme`: generated automatically
+- SHA-256 checksums: generated automatically
+- GitHub Release: created automatically on `v1.0.0` tag
+- copyright: Ploos AS
+- Aminet uploader: Per Gustav Ousdal <amiga@ousdal.org>
+
+Roadshow qualification is explicitly post-1.0.0 and does not block this release.
