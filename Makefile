@@ -21,7 +21,7 @@ M31_TEST := build/host/test_arexx
 M32_TEST := build/host/test_arexx_m32
 M41_TEST := build/host/test_config
 
-.PHONY: all clean check host-check m1-check m1.3-check m2.1-check m2.2-check m2.3-check m3.1-check m3.2-check m3.3a-check m3.3b-check m3.3c-check m4.1-check m4.2-check native-check
+.PHONY: all clean check host-check m1-check m1.3-check m2.1-check m2.2-check m2.3-check m3.1-check m3.2-check m3.3a-check m3.3b-check m3.3c-check m4.1-check m4.2-check m5-check native-check
 
 all: $(TARGET)
 
@@ -137,3 +137,13 @@ clean:
 # Adversarial host datagrams are separate from real AmiTCP qualification.
 m4.2-check: m4.1-check
 	@python3 tests/test_net.py $(HOST_TARGET)
+
+m5-check:
+	@bash -n tools/package_release.sh
+	@grep -q 'return "AmiNTP 1.0.0";' src/version.c
+	@grep -q 'Uploader:     Per Gustav Ousdal <amiga@ousdal.org>' tools/package_release.sh
+	@grep -q 'Copyright (c) 2026 Ploos AS' tools/package_release.sh
+	@test -s docs/RELEASE_NOTES_v1.0.0.md
+	@grep -q "default: '1.0.0'" .github/workflows/release.yml
+	@grep -q -- '--notes-file' .github/workflows/release.yml
+	@echo "M5 v1.0.0 release static checks: PASS"
