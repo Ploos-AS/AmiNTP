@@ -55,7 +55,7 @@ after="$aros_root/amintp-m3.3c-after.txt"
 status=FAIL
 observation=guest_result_missing
 
-if [[ -f "$started" && -f "$version_out" ]] && grep -q 'AmiNTP 0.3.2-m3.2' "$version_out"; then
+if [[ -f "$started" && -f "$version_out" ]] && grep -q 'AmiNTP 1.0.0' "$version_out"; then
   status=PASS
   observation=guest_executed_native_amintp_version
 elif [[ -f "$after" ]]; then
