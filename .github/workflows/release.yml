@@ -9,7 +9,7 @@ on:
       version:
         description: Package version without leading v (does not publish a GitHub Release)
         required: true
-        default: '0.3.2-m3.2'
+        default: '1.0.0'
 
 permissions:
   contents: write
@@ -53,6 +53,7 @@ jobs:
         run: |
           make check
           make m4.2-check
+          make m5-check
 
       - name: Build native 68000 AmiNTP
         shell: bash
@@ -113,10 +114,12 @@ jobs:
           lha l dist/AmiNTP.lha | tee dist/AmiNTP.lha.contents.txt
           test -s dist/AmiNTP.readme
           grep -F 'Short:        Native SNTP client for classic Amiga' dist/AmiNTP.readme
-          grep -F 'Uploader:     Per Gustav Ousdal' dist/AmiNTP.readme
+          grep -F 'Uploader:     Per Gustav Ousdal <amiga@ousdal.org>' dist/AmiNTP.readme
+          grep -F 'Author:       Ploos AS' dist/AmiNTP.readme
           grep -F 'Type:         comm/net' dist/AmiNTP.readme
           grep -F 'Architecture: m68k-amigaos' dist/AmiNTP.readme
           grep -F "Version:      ${{ steps.version.outputs.version }}" dist/AmiNTP.readme
+          grep -F 'Copyright (c) 2026 Ploos AS' dist/AmiNTP.readme
           sha256sum -c dist/AmiNTP.lha.sha256
           sha256sum -c "dist/AmiNTP-v${{ steps.version.outputs.version }}.zip.sha256"
 
@@ -142,10 +145,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          NOTES="docs/RELEASE_NOTES_v${VERSION}.md"
+          if [[ ! -f "$NOTES" ]]; then
+            echo "ERROR: release notes not found: $NOTES" >&2
+            exit 1
+          fi
           gh release create "$TAG" \
             --verify-tag \
             --title "AmiNTP ${TAG}" \
-            --generate-notes \
+            --notes-file "$NOTES" \
             dist/AmiNTP.lha \
             dist/AmiNTP.readme \
             dist/AmiNTP.lha.sha256 \
