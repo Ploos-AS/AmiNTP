@@ -26,7 +26,9 @@ docker run --rm \
     src/version.c \
     src/sntp.c \
     src/query.c \
+    src/ipv4.c \
     src/time.c \
+    src/time_amiga.c \
     src/sync.c \
     src/arexx_core.c \
     src/arexx_ops.c \
