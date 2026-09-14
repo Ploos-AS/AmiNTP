@@ -99,7 +99,11 @@ Qualification split:
 - AmiTCP qualification: [M4.2 local report](M4_2_QUALIFICATION.md) — PASS on
   native AmiTCP_NG 4.1.5 with A2065/SLIRP and FS-UAE socket emulation disabled.
   SNTP hardening and deterministic end-to-end native-stack tests pass.
-- Miami qualification
+- **Miami qualification: PASS.** Miami 3.2b2 on the same native
+  68000/KS2.04/WB2.1 A2065/SLIRP platform passes IPv4, DNS, deterministic
+  QUERY, clock update, RTC/NORTC, failure paths, and 5/5 stability with
+  `bsdsocket_library = 0`. See
+  `docs/M4_2_PLUS_MIAMI_QUALIFICATION.md`.
 - Roadshow qualification
 - native runtime regression matrix
 

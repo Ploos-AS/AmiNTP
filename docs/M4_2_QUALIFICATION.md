@@ -1,4 +1,4 @@
-# M4.2 AmiTCP runtime qualification
+# M4.2 native-stack runtime qualification
 
 Overall: **PASS**, 2026-09-13 (native AmiTCP/A2065 qualification). Real
 AmigaOS 2.1 and AmiTCP_NG 4.1.5 were exercised over an emulated A2065 with
@@ -13,6 +13,14 @@ RC 0 and configured `10.0.2.15` by DHCP. AmiNTP completed deterministic native
 UDP QUERY, exact originate validation, NTP-to-Amiga conversion, 5/5 repeat
 queries, clock update, NORTC, normal RTC update, timeout, and malformed-origin
 tests. No AmiNTP source change was needed.
+
+The separate **M4.2+ Miami native-stack qualification also passes**, dated
+2026-09-14. Miami 3.2b2 was exercised in a fresh disposable copy of the same
+68000/KS2.04/WB2.1 profile, using Miami's native `bsdsocket.library 4.1`, the
+A2065/SLIRP path, and `bsdsocket_library = 0`. Native IPv4, DNS, deterministic
+SNTP validation and conversion, clock update, RTC/NORTC behavior, failure
+paths, and 5/5 repeat queries all passed. See the
+[Miami qualification report](M4_2_PLUS_MIAMI_QUALIFICATION.md).
 
 The older investigations below are retained as historical evidence. Their
 blocked classifications describe earlier invalid or incorrectly provisioned
