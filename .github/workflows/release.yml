@@ -9,7 +9,7 @@ on:
       version:
         description: Package version without leading v (does not publish a GitHub Release)
         required: true
-        default: '1.0.0'
+        default: '1.0.1'
 
 permissions:
   contents: write
@@ -121,6 +121,15 @@ jobs:
           grep -F 'Architecture: m68k-amigaos' dist/AmiNTP.readme
           grep -F "Version:      ${{ steps.version.outputs.version }}" dist/AmiNTP.readme
           grep -F 'Copyright (c) 2026 Ploos AS' dist/AmiNTP.readme
+          for script in ping status query sync safe-sync startup-sync diagnostics; do
+            grep -F "examples/arexx/${script}.rexx" dist/AmiNTP.lha.contents.txt
+          done
+          grep -F 'examples/arexx/README.md' dist/AmiNTP.lha.contents.txt
+          unzip -l "dist/AmiNTP-v${{ steps.version.outputs.version }}.zip" | tee dist/AmiNTP.zip.contents.txt
+          for script in ping status query sync safe-sync startup-sync diagnostics; do
+            grep -F "examples/arexx/${script}.rexx" dist/AmiNTP.zip.contents.txt
+          done
+          grep -F 'examples/arexx/README.md' dist/AmiNTP.zip.contents.txt
           sha256sum -c dist/AmiNTP.lha.sha256
           sha256sum -c "dist/AmiNTP-v${{ steps.version.outputs.version }}.zip.sha256"
 
