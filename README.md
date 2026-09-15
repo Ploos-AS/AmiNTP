@@ -22,6 +22,7 @@ TCP/IP stack.
 - Configuration via `ENVARC:AmiNTP/AmiNTP.conf`
 - Stable CLI return codes
 - ARexx control through the `AMINTP` port
+- Example ARexx automation scripts
 - Bebbo GCC toolchain
 
 AmiNTP is intentionally not a full NTP daemon. Its primary job is to obtain
@@ -29,7 +30,9 @@ correct time reliably and expose that functionality through the CLI and ARexx.
 
 ## Current status
 
-AmiNTP 1.0.0 is release-ready.
+AmiNTP 1.0.0 is release-ready. The 1.0.1 maintenance release is being prepared
+with documentation and useful ARexx automation examples; no new protocol or
+clock semantics are implied by that version bump.
 
 Native end-to-end qualification has passed on a 68000 / Kickstart 2.04 /
 Workbench 2.1 configuration with:
@@ -91,12 +94,21 @@ ENVARC:AmiNTP/AmiNTP.conf
 
 See `examples/AmiNTP.conf` and the qualification documents under `docs/`.
 
+## ARexx examples
+
+AmiNTP exposes its resident control interface through the public `AMINTP`
+ARexx port. Ready-to-use examples are provided under `examples/arexx/`,
+including port checks, status/diagnostics, query, synchronization, safe
+query-before-sync and startup-friendly synchronization.
+
+See `examples/arexx/README.md` for usage.
+
 ## Release
 
-The GitHub release workflow is tag-driven. A `v1.0.0` tag builds the native
-68000 binary, runs the regression checks, creates the Aminet-compatible
-`AmiNTP.lha` + `AmiNTP.readme` pair, creates checksums and publishes the files
-as GitHub Release assets.
+The GitHub release workflow is tag-driven. Release tags build the native 68000
+binary, run the regression checks, create the Aminet-compatible `AmiNTP.lha` +
+`AmiNTP.readme` pair, create checksums and publish the files as GitHub Release
+assets.
 
 ## Milestones
 
@@ -106,6 +118,7 @@ as GitHub Release assets.
 - **M3 — ARexx/native runtime:** complete
 - **M4 — Integration:** AmiTCP and Miami native qualification complete
 - **M5 — Release:** 1.0.0 release packaging ready
+- **v1.0.1 — Maintenance:** ARexx examples and documentation in preparation
 
 See [docs/ROADMAP.md](docs/ROADMAP.md) for details.
 
