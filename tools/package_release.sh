@@ -19,9 +19,8 @@ mkdir -p "$STAGE/docs" "$AMINET_STAGE/docs"
 
 cp "$AMINTP_BINARY" "$STAGE/AmiNTP"
 cp README.md LICENSE "$STAGE/"
-if [[ -f examples/AmiNTP.conf ]]; then
-  mkdir -p "$STAGE/examples"
-  cp examples/AmiNTP.conf "$STAGE/examples/"
+if [[ -d examples ]]; then
+  cp -a examples "$STAGE/"
 fi
 
 # Include the integration qualification summaries when present.
